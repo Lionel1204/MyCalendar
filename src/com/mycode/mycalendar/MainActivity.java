@@ -77,7 +77,6 @@ public class MainActivity extends FragmentActivity implements
     /**
      * onFocus when cell has/lose focus
      */
-    @Override
     public void onFocusChange(View v, boolean hasFocus) {
         // TODO Auto-generated method stub
         if(!hasFocus){
@@ -90,7 +89,6 @@ public class MainActivity extends FragmentActivity implements
         
     }
 
-    @Override
     public boolean onMenuItemClick(MenuItem item) {
         // TODO Auto-generated method stub
         switch(item.getItemId()){
@@ -150,7 +148,6 @@ public class MainActivity extends FragmentActivity implements
     /**
      * has set the Date in Cell
      */
-    @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         // TODO Auto-generated method stub
         int offset = (year - LunarCalendar.getMinYear()) * mMonthAYear + monthOfYear;

@@ -5,8 +5,13 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,7 +29,10 @@ import java.util.Calendar;
 
 public class SchedularActivity extends Activity {
 
-    private Calendar mCalendar = Calendar.getInstance();
+    private Calendar mCalendar = null;
+    
+    private ContentResolver mResolver = null;
+    
     private TextView mTxtFromDateView = null;
     private TextView mTxtToDateView = null;
     private TextView mTxtFromTimeView = null;
@@ -34,6 +42,8 @@ public class SchedularActivity extends Activity {
     private CheckBox mCheckAllDay = null;
     private CheckBox mCheckRecurrence = null;
     private Spinner mSpinnerRecurrenceStyle = null;
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -42,6 +52,9 @@ public class SchedularActivity extends Activity {
         
         //ActionBar actionBar = getActionBar();
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        
+        mCalendar = Calendar.getInstance();
+        mResolver = this.getContentResolver();
         initControls();
         
     }
@@ -80,12 +93,14 @@ public class SchedularActivity extends Activity {
         switch(item.getItemId()){
             case R.id.menu_action_check:
             	//TODO add start service with content provider
-                Toast.makeText(this, "check Item is pressed", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "check Item is pressed", Toast.LENGTH_SHORT).show();
+            	Intent intentServer = new Intent(this, SchedularService.class); 
+            	startService(intentServer);
                 break;
             case android.R.id.home:
-            	Intent intent = new Intent(this, MainActivity.class);  
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  
-                startActivity(intent);  
+            	Intent intentBackhome = new Intent(this, MainActivity.class);  
+            	intentBackhome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  
+                startActivity(intentBackhome);  
             	//Toast.makeText(this, "home Item is pressed", Toast.LENGTH_SHORT).show();
                 break;
             default:
@@ -97,10 +112,43 @@ public class SchedularActivity extends Activity {
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
+    	updateControls();
         super.onStart();
     }
 
-    @Override
+    private void updateControls() {
+		// TODO Auto-generated method stub
+		//get data from Provider
+    	Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+    	String[] projection = new String []{
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT,
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE,
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE,
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY,
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DESCRIPTION,
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE,
+    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE
+    	};
+/*    	
+    	ContentValues values=new ContentValues();
+        //添加学生信息
+        values.put(Student.NMAE, "Jack");
+        values.put(Student.GENDER, "男");
+        values.put(Student.AGE, 20);
+
+        mResolver.insert(uri, values);
+  */  	
+    	Cursor cursor = mResolver.query(uri, projection, null, null, null);
+    	
+    	//int curCount = cursor.getCount();
+    	if(cursor.moveToFirst()){
+    		while (cursor.moveToNext()){
+    			Log.d("SchedualrAcitivity", "id"+cursor.getInt(0)+"subject"+cursor.getString(1));
+    		}
+    	}
+	}
+
+	@Override
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
@@ -147,7 +195,6 @@ public class SchedularActivity extends Activity {
             mView = view;
         }
 
-        @Override
         public void onDateSet(DatePicker view, int year, int month, int monthDay) {
             mCalendar.set(Calendar.YEAR, year); 
             mCalendar.set(Calendar.MONTH, month); 
@@ -174,8 +221,7 @@ public class SchedularActivity extends Activity {
             mView = view;
         }
 
-        @Override
-		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             mCalendar.set(Calendar.HOUR, hourOfDay); 
             mCalendar.set(Calendar.MINUTE, minute); 
             

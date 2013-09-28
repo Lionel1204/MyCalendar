@@ -33,6 +33,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service android:name="SchedularService"></service>
+        <provider android:name=".SchedularProvider"
+                  android:authorities="com.mycode.mycalendar.SchedularProvider"/>
     </application>
 
 </manifest>
