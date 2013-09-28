@@ -97,6 +97,9 @@ public class SchedularActivity extends Activity {
             	Intent intentServer = new Intent(this, SchedularService.class); 
             	startService(intentServer);
                 break;
+            case R.id.menu_action_delete:
+            	
+            	break;
             case android.R.id.home:
             	Intent intentBackhome = new Intent(this, MainActivity.class);  
             	intentBackhome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  

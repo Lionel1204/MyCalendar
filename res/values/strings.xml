@@ -147,5 +147,6 @@
         <item>每月</item>
         <item>每年</item>
     </string-array>
+    <string name="menu_action_delete">Delete</string>
     
 </resources>
