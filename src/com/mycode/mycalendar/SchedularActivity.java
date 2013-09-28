@@ -1,18 +1,17 @@
 package com.mycode.mycalendar;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.Time;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.Spinner;
@@ -58,6 +57,13 @@ public class SchedularActivity extends Activity {
         mCheckAllDay = (CheckBox)this.findViewById(R.id.checkAllDay);
         mCheckRecurrence = (CheckBox)this.findViewById(R.id.checkRecurrence);
         mSpinnerRecurrenceStyle = (Spinner)this.findViewById(R.id.spinnerRecurrenceStyle);
+        
+        ArrayAdapter<CharSequence> adapterRecurrenceStyle = ArrayAdapter.createFromResource( this, 
+        		                                                                             R.array.recurrence_style,
+        		                                                                             android.R.layout.simple_spinner_item);
+        adapterRecurrenceStyle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        mSpinnerRecurrenceStyle.setAdapter(adapterRecurrenceStyle);
     }
 
     @Override
@@ -73,10 +79,14 @@ public class SchedularActivity extends Activity {
         // TODO Auto-generated method stub
         switch(item.getItemId()){
             case R.id.menu_action_check:
+            	//TODO add start service with content provider
                 Toast.makeText(this, "check Item is pressed", Toast.LENGTH_SHORT).show();
                 break;
             case android.R.id.home:
-                Toast.makeText(this, "home Item is pressed", Toast.LENGTH_SHORT).show();
+            	Intent intent = new Intent(this, MainActivity.class);  
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  
+                startActivity(intent);  
+            	//Toast.makeText(this, "home Item is pressed", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
@@ -164,7 +174,8 @@ public class SchedularActivity extends Activity {
             mView = view;
         }
 
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        @Override
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             mCalendar.set(Calendar.HOUR, hourOfDay); 
             mCalendar.set(Calendar.MINUTE, minute); 
             

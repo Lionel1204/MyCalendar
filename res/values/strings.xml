@@ -139,4 +139,13 @@
     <string name="schedular_to_date">To Date</string>
     <string name="schedular_to_time">To Time</string>
     <string name="menu_action_check">Submit</string>
+    
+    <string-array name="recurrence_style">
+        <item>每天</item>
+        <item>每周</item>
+        <item>每月</item>
+        <item>每月</item>
+        <item>每年</item>
+    </string-array>
+    
 </resources>

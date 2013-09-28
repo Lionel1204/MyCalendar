@@ -16,6 +16,7 @@ public final class R {
         public static final int chinese_zhi=0x7f070007;
         public static final int gregorianFestivals=0x7f070000;
         public static final int lunarFestivals=0x7f070001;
+        public static final int recurrence_style=0x7f070008;
         public static final int solarTerm=0x7f070002;
     }
     public static final class attr {
