@@ -38,8 +38,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="@string/schedular_from_date"
-            android:inputType="date"
-            android:onClick="onDateEditClick" />
+            android:inputType="date" />
 
         <EditText
             android:id="@+id/editFromTime"

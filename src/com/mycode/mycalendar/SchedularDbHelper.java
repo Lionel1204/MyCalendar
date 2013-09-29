@@ -27,6 +27,8 @@ public class SchedularDbHelper extends SQLiteOpenHelper {
         		 + " INTEGER PRIMARY KEY,"
         		 + SchedularTableMetaData.SCHEDULAR_SUBJECT
         		 + " TEXT,"
+        		 + SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT
+        		 + " TEXT,"
         		 + SchedularTableMetaData.SCHEDULAR_FROM_DATE
         		 + " INTEGER,"
         		 + SchedularTableMetaData.SCHEDULAR_TO_DATE

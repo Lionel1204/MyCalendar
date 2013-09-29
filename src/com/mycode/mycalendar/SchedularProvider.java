@@ -1,5 +1,7 @@
 package com.mycode.mycalendar;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import com.mycode.mycalendar.SchedularProviderMetaData.SchedularTableMetaData;
@@ -103,7 +105,7 @@ public class SchedularProvider extends ContentProvider {
 			throw new IllegalArgumentException("Unknown URI " + uri);	
 		}
 		
-		ContentValues values;
+		ContentValues values = null;
 		
 		if(null != initialValues){
 			values = new ContentValues(initialValues);
@@ -111,42 +113,45 @@ public class SchedularProvider extends ContentProvider {
 			values = new ContentValues();
 		}
 		
+		
 		Long now = Long.valueOf(System.currentTimeMillis());
 		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(System.currentTimeMillis());
+		DateFormat dateFormat = DateFormat.getTimeInstance();
+		String today = dateFormat.format(calendar.getTime());
+		
 		//Make sure to set the fields
-		if (values.containsKey(SchedularTableMetaData.CREATED_DATE)){
-			values.put(SchedularTableMetaData.CREATED_DATE, now);
-		}
 		
-		if(values.containsKey(SchedularTableMetaData.MODIFIED_DATE)){
-			values.put(SchedularTableMetaData.MODIFIED_DATE, now);
-		}
-		
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_SUBJECT)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_SUBJECT)){
 			values.put(SchedularTableMetaData.SCHEDULAR_SUBJECT, "My default Schedule");
 		}
 		
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_FROM_DATE)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT)){
+		    values.put(SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT, today);
+		}
+		
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_FROM_DATE)){
 			values.put(SchedularTableMetaData.SCHEDULAR_FROM_DATE, now);
 		}
 		
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_TO_DATE)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_TO_DATE)){
 			values.put(SchedularTableMetaData.SCHEDULAR_TO_DATE, now);
 		}
 		
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY)){
 			values.put(SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY, true);
 		}
 		
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_DESCRIPTION)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_DESCRIPTION)){
 			values.put(SchedularTableMetaData.SCHEDULAR_DESCRIPTION, "N/A");
 		}
 
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE)){
 			values.put(SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE, false);
 		}
 		
-		if (values.containsKey(SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE)){
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE)){
 			values.put(SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE, 0);
 		}
 		

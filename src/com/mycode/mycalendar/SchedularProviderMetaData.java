@@ -27,6 +27,7 @@ public class SchedularProviderMetaData {
 		
 		//additional Columns start here
 		public static final String SCHEDULAR_SUBJECT = "Subject";
+		public static final String SCHEDULAR_FROM_DATE_TEXT = "FromDateText"; //easy to query
 		public static final String SCHEDULAR_FROM_DATE = "FromDate";
 		//public static final String SCHEDULAR_FROM_TIME = "FromTime";//may not use time field
 		public static final String SCHEDULAR_TO_DATE = "ToDate";
@@ -34,11 +35,11 @@ public class SchedularProviderMetaData {
 		public static final String SCHEDULAR_IS_ALL_DAY = "isAllDay";
 		public static final String SCHEDULAR_DESCRIPTION = "Description";
 		public static final String SCHEDULAR_IS_RECURRENCE = "isRecurrence";
-		public static final String SCHEDULAR_RECURRENCE_STYLE = "RecurrenceStyle";
-		
+		public static final String SCHEDULAR_RECURRENCE_STYLE = "RecurrenceStyle"; //start from 0
 		//Database version information
 		public static final String CREATED_DATE = "created";
 		public static final String MODIFIED_DATE = "modified";
+		
 		
 	}
 

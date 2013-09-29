@@ -91,6 +91,12 @@ public class SchedularActivity extends Activity {
             DateFormat dateFormat = DateFormat.getDateInstance();
             mCalendar.setTimeInMillis(mCellDate);
             mTxtFromDateView.setText(dateFormat.format(mCalendar.getTime()));
+            Bundle bundle = new Bundle();
+            bundle.putInt(YEAR, mCalendar.get(Calendar.YEAR));
+            bundle.putInt(MONTH, mCalendar.get(Calendar.MONTH));
+            bundle.putInt(DAY, mCalendar.get(Calendar.DAY_OF_MONTH));
+            
+            mTxtFromDateView.setTag(bundle);
             mTxtFromDateView.setEnabled(false);
         }
         
@@ -147,6 +153,7 @@ public class SchedularActivity extends Activity {
         ContentValues values = new ContentValues();
         
         values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT, mTxtSubjectView.getText().toString());
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT, mTxtFromDateView.getText().toString());
         values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE, (long)ConvertControlsDate2Millis(mTxtFromDateView, mTxtFromTimeView));
         values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE, (long)ConvertControlsDate2Millis(mTxtToDateView, mTxtToTimeView));
         values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY, mCheckAllDay.isChecked());
@@ -168,6 +175,7 @@ public class SchedularActivity extends Activity {
         int day    = 0;
         int hour   = 0;
         int minute = 0;
+        int second = 0;
         
         Bundle dateBundle = (Bundle)dateView.getTag();
         if(null != dateBundle){
@@ -179,7 +187,7 @@ public class SchedularActivity extends Activity {
         Bundle timeBundle = (Bundle)timeView.getTag();
         if(null != timeBundle){
             hour = timeBundle.getInt(HOUR, 0);
-            hour = timeBundle.getInt(MINUTE, 0);
+            minute = timeBundle.getInt(MINUTE, 0);
         }
         
         Calendar calendar = Calendar.getInstance();
@@ -198,8 +206,10 @@ public class SchedularActivity extends Activity {
         // TODO Auto-generated method stub
         // get data from Provider
         Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+        
         String[] projection = new String[] {
                 SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT,
                 SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE,
                 SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE,
                 SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY,
@@ -207,15 +217,59 @@ public class SchedularActivity extends Activity {
                 SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE,
                 SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE
         };
-/*
+
+        mCalendar.setTimeInMillis(mCellDate);
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        DateFormat timeFormat = DateFormat.getTimeInstance();
+        String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT + "=?";
+        String[] selectionArgs = {dateFormat.format(mCalendar.getTime())};
+
     	Cursor cursor = mResolver.query(uri,
     	                                null,
-    	                                SchedularTableMetaData.SCHEDULAR_FROM_DATE + " = ",
-    	                                null,
+    	                                selection,
+    	                                selectionArgs,
     	                                null);
-    	
+
+    	if (cursor.moveToFirst()){
+            //get the index of column in cursor, it is different from the database
+    	    int iSubject = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT);
+    	    //int iFromDateText = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT);
+    	    int iFromDate = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE);
+    	    int iToDate = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE);
+    	    int iIsRecurrence = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE);
+    	    int iRecurrenceStyle = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE);
+    	    int iDescription = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DESCRIPTION);
+    	    int iIsAllDay = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY);
+    	    
+    	    //update the UI
+    	    mTxtSubjectView.setText(cursor.getString(iSubject));
+    	    mTxtDescriptionView.setText(cursor.getString(iDescription));
+    	    mCheckAllDay.setChecked( 0 != cursor.getInt(iIsAllDay));
+    	    if (mCheckAllDay.isChecked()){
+    	        mTxtFromTimeView.setEnabled(false);
+    	        mTxtToTimeView.setEnabled(false);
+    	    }
+    	    mCheckRecurrence.setChecked( 0 != cursor.getInt(iRecurrenceStyle));
+    	    mSpinnerRecurrenceStyle.setSelection(cursor.getInt(iRecurrenceStyle));
+
+    	    if(!mCheckRecurrence.isChecked()){
+    	        mSpinnerRecurrenceStyle.setEnabled(false);
+    	    }
+    	    
+    	    
+    	    long milliFromDate = cursor.getLong(iFromDate);
+    	    long milliToDate = cursor.getLong(iToDate);
+    	    Calendar calendar = Calendar.getInstance();
+    	    
+    	    calendar.setTimeInMillis(milliFromDate);
+    	    mTxtFromTimeView.setText(timeFormat.format(calendar.getTime()));
+    	    
+    	    calendar.setTimeInMillis(milliToDate);
+    	    mTxtToDateView.setText(dateFormat.format(calendar.getTime()));
+            mTxtToTimeView.setText(timeFormat.format(calendar.getTime()));
+            }
     	cursor.close();
-  */  	
+
 	}
 
 	@Override
@@ -317,7 +371,7 @@ public class SchedularActivity extends Activity {
 
         private void updateView(int hourOfDay, int minute) {
             // TODO Auto-generated method stub
-            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+            DateFormat dateFormat = DateFormat.getTimeInstance();
             if(mView == mTxtFromTimeView){
                 mTxtFromTimeView.setText(dateFormat.format(mCalendar.getTime()));
                 Bundle bundle = new Bundle();
