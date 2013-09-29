@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.sql.Date;
 import java.text.DateFormat;
 import java.util.Calendar;
 
@@ -31,6 +33,7 @@ public class SchedularActivity extends Activity {
 
     private Calendar mCalendar = null;
     private long mCellDate = 0;
+    private boolean mHasRecord = false;
     private ContentResolver mResolver = null;
     
     private TextView mTxtFromDateView = null;
@@ -43,7 +46,12 @@ public class SchedularActivity extends Activity {
     private CheckBox mCheckRecurrence = null;
     private Spinner mSpinnerRecurrenceStyle = null;
     
-    
+    private static final String YEAR = "Year";
+    private static final String MONTH = "Month";
+    private static final String DAY = "Day";
+    private static final String HOUR = "Hour";
+    private static final String MINUTE = "Minius";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -82,10 +90,15 @@ public class SchedularActivity extends Activity {
         if (mCellDate != 0){
             DateFormat dateFormat = DateFormat.getDateInstance();
             mCalendar.setTimeInMillis(mCellDate);
-            //mTxtFromDateView.setText(text)
             mTxtFromDateView.setText(dateFormat.format(mCalendar.getTime()));
-            
+            mTxtFromDateView.setEnabled(false);
         }
+        
+        //close ime
+        mTxtFromDateView.setInputType(EditorInfo.TYPE_NULL);
+        mTxtToDateView.setInputType(EditorInfo.TYPE_NULL);
+        mTxtFromTimeView.setInputType(EditorInfo.TYPE_NULL);
+        mTxtToTimeView.setInputType(EditorInfo.TYPE_NULL);
         return;
     }
 
@@ -103,12 +116,12 @@ public class SchedularActivity extends Activity {
         switch(item.getItemId()){
             case R.id.menu_action_check:
             	//TODO add start service with content provider
-                //Toast.makeText(this, "check Item is pressed", Toast.LENGTH_SHORT).show();
-            	Intent intentServer = new Intent(this, SchedularService.class); 
-            	startService(intentServer);
+                SaveSchedular();
+                this.finish();
                 break;
             case R.id.menu_action_delete:
-            	
+            	DeleteSchedular();
+            	this.finish();
             	break;
             case android.R.id.home:
             	Intent intentBackhome = new Intent(this, MainActivity.class);  
@@ -122,6 +135,58 @@ public class SchedularActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void DeleteSchedular() {
+        // TODO Auto-generated method stub
+        Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+        //uri.withAppendedPath(uri, )
+    }
+
+    private void SaveSchedular() {
+        // TODO Auto-generated method stub
+        Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+        ContentValues values = new ContentValues();
+        
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT, mTxtSubjectView.getText().toString());
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE, (long)ConvertControlsDate2Millis(mTxtFromDateView, mTxtFromTimeView));
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE, (long)ConvertControlsDate2Millis(mTxtToDateView, mTxtToTimeView));
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY, mCheckAllDay.isChecked());
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DESCRIPTION, (String)mTxtDescriptionView.getText().toString());
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE, mCheckRecurrence.isChecked());
+        values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE, (int)mSpinnerRecurrenceStyle.getSelectedItemPosition());
+        if (mHasRecord){
+            //Uri updateUri = mResolver.update(uri, values, );
+        }else{
+            Uri insertUri = mResolver.insert(uri, values);
+        }
+        
+    }
+
+    private long ConvertControlsDate2Millis(TextView dateView, TextView timeView) {
+        // TODO Auto-generated method stub
+        int year   = 0;
+        int month  = 0;
+        int day    = 0;
+        int hour   = 0;
+        int minute = 0;
+        
+        Bundle dateBundle = (Bundle)dateView.getTag();
+        if(null != dateBundle){
+            year = dateBundle.getInt(YEAR, 0);
+            month = dateBundle.getInt(MONTH, 0);
+            day = dateBundle.getInt(DAY, 0);
+        }
+        
+        Bundle timeBundle = (Bundle)timeView.getTag();
+        if(null != timeBundle){
+            hour = timeBundle.getInt(HOUR, 0);
+            hour = timeBundle.getInt(MINUTE, 0);
+        }
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day, hour, minute);
+        return calendar.getTimeInMillis();
+    }
+
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
@@ -130,34 +195,27 @@ public class SchedularActivity extends Activity {
     }
 
     private void updateControls() {
-		// TODO Auto-generated method stub
-		//get data from Provider
-    	Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
-    	String[] projection = new String []{
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT,
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE,
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE,
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY,
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DESCRIPTION,
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE,
-    			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE
-    	};
-    	
-        
-        /*
+        // TODO Auto-generated method stub
+        // get data from Provider
+        Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+        String[] projection = new String[] {
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_TO_DATE,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DESCRIPTION,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE,
+                SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE
+        };
+/*
     	Cursor cursor = mResolver.query(uri,
     	                                null,
     	                                SchedularTableMetaData.SCHEDULAR_FROM_DATE + " = ",
     	                                null,
     	                                null);
     	
-    	//int curCount = cursor.getCount();
-    	if(cursor.moveToFirst()){
-    		while (cursor.moveToNext()){
-    			Log.d("SchedualrAcitivity", "id"+cursor.getInt(0)+"subject"+cursor.getString(1));
-    		}
-    	}
-    	*/
+    	cursor.close();
+  */  	
 	}
 
 	@Override
@@ -169,6 +227,7 @@ public class SchedularActivity extends Activity {
     @Override
     protected void onStop() {
         // TODO Auto-generated method stub
+        
         super.onStop();
     }
 
@@ -179,15 +238,15 @@ public class SchedularActivity extends Activity {
                                                      mCalendar.get(Calendar.MONTH),
                                                      mCalendar.get(Calendar.DAY_OF_MONTH));
         dpd.show();
-        
+         
     }
     
     public void onTimeEditClick(View v){
         TimePickerDialog tpd = new TimePickerDialog( this,
                                                      new TimeListener(v),
-                                                     mCalendar.get(Calendar.HOUR),
+                                                     mCalendar.get(Calendar.HOUR_OF_DAY),
                                                      mCalendar.get(Calendar.MINUTE),
-                                                     true);
+                                                     false);
         tpd.show();
     }
     
@@ -212,16 +271,32 @@ public class SchedularActivity extends Activity {
             mCalendar.set(Calendar.MONTH, month); 
             mCalendar.set(Calendar.DAY_OF_MONTH, monthDay); 
             
-            updateView();
+            updateView(year, month, monthDay);
         }
 
-        private void updateView() {
+        private void updateView(int year, int month, int monthDay) {
             // TODO Auto-generated method stub
             DateFormat dateFormat = DateFormat.getDateInstance();
+            
             if(mView == mTxtFromDateView){
                 mTxtFromDateView.setText(dateFormat.format(mCalendar.getTime()));
+                
+                Bundle bundle = new Bundle();
+                bundle.putInt(YEAR, year);
+                bundle.putInt(MONTH, month);
+                bundle.putInt(DAY, monthDay);
+                
+                mTxtFromDateView.setTag(bundle);
+                
             }else if(mView == mTxtToDateView){
                 mTxtToDateView.setText(dateFormat.format(mCalendar.getTime()));
+                
+                Bundle bundle = new Bundle();
+                bundle.putInt(YEAR, year);
+                bundle.putInt(MONTH, month);
+                bundle.putInt(DAY, monthDay);
+                
+                mTxtToDateView.setTag(bundle);
             }
         }
     }
@@ -234,19 +309,29 @@ public class SchedularActivity extends Activity {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            mCalendar.set(Calendar.HOUR, hourOfDay); 
+            mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay); 
             mCalendar.set(Calendar.MINUTE, minute); 
             
-            updateView();
+            updateView(hourOfDay, minute);
         }
 
-        private void updateView() {
+        private void updateView(int hourOfDay, int minute) {
             // TODO Auto-generated method stub
-            DateFormat dateFormat = DateFormat.getTimeInstance();
+            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
             if(mView == mTxtFromTimeView){
                 mTxtFromTimeView.setText(dateFormat.format(mCalendar.getTime()));
+                Bundle bundle = new Bundle();
+                bundle.putInt(HOUR, hourOfDay);
+                bundle.putInt(MINUTE, minute);
+                
+                mTxtFromTimeView.setTag(bundle);
             }else if(mView == mTxtToTimeView){
                 mTxtToTimeView.setText(dateFormat.format(mCalendar.getTime()));
+                Bundle bundle = new Bundle();
+                bundle.putInt(HOUR, hourOfDay);
+                bundle.putInt(MINUTE, minute);
+                
+                mTxtToTimeView.setTag(bundle);
             }
         }
     }
