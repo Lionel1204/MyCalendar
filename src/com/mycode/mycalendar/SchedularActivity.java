@@ -30,15 +30,15 @@ import java.util.Calendar;
 public class SchedularActivity extends Activity {
 
     private Calendar mCalendar = null;
-    
+    private long mCellDate = 0;
     private ContentResolver mResolver = null;
     
     private TextView mTxtFromDateView = null;
     private TextView mTxtToDateView = null;
     private TextView mTxtFromTimeView = null;
     private TextView mTxtToTimeView = null;
-    private TextView mTxtToSubjectView = null;
-    private TextView mTxtToDescriptionView = null;
+    private TextView mTxtSubjectView = null;
+    private TextView mTxtDescriptionView = null;
     private CheckBox mCheckAllDay = null;
     private CheckBox mCheckRecurrence = null;
     private Spinner mSpinnerRecurrenceStyle = null;
@@ -55,6 +55,7 @@ public class SchedularActivity extends Activity {
         
         mCalendar = Calendar.getInstance();
         mResolver = this.getContentResolver();
+        mCellDate = this.getIntent().getLongExtra("CellDay", 0);
         initControls();
         
     }
@@ -65,8 +66,8 @@ public class SchedularActivity extends Activity {
         mTxtToDateView = (TextView)this.findViewById(R.id.editToDate);
         mTxtFromTimeView = (TextView)this.findViewById(R.id.editFromTime);
         mTxtToTimeView = (TextView)this.findViewById(R.id.editToTime);
-        mTxtToSubjectView = (TextView)this.findViewById(R.id.editSubject);
-        mTxtToDescriptionView = (TextView)this.findViewById(R.id.editDescription);
+        mTxtSubjectView = (TextView)this.findViewById(R.id.editSubject);
+        mTxtDescriptionView = (TextView)this.findViewById(R.id.editDescription);
         mCheckAllDay = (CheckBox)this.findViewById(R.id.checkAllDay);
         mCheckRecurrence = (CheckBox)this.findViewById(R.id.checkRecurrence);
         mSpinnerRecurrenceStyle = (Spinner)this.findViewById(R.id.spinnerRecurrenceStyle);
@@ -77,6 +78,15 @@ public class SchedularActivity extends Activity {
         adapterRecurrenceStyle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         mSpinnerRecurrenceStyle.setAdapter(adapterRecurrenceStyle);
+        
+        if (mCellDate != 0){
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            mCalendar.setTimeInMillis(mCellDate);
+            //mTxtFromDateView.setText(text)
+            mTxtFromDateView.setText(dateFormat.format(mCalendar.getTime()));
+            
+        }
+        return;
     }
 
     @Override
@@ -132,16 +142,14 @@ public class SchedularActivity extends Activity {
     			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE,
     			SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE
     	};
-/*    	
-    	ContentValues values=new ContentValues();
-        //添加学生信息
-        values.put(Student.NMAE, "Jack");
-        values.put(Student.GENDER, "男");
-        values.put(Student.AGE, 20);
-
-        mResolver.insert(uri, values);
-  */  	
-    	Cursor cursor = mResolver.query(uri, projection, null, null, null);
+    	
+        
+        /*
+    	Cursor cursor = mResolver.query(uri,
+    	                                null,
+    	                                SchedularTableMetaData.SCHEDULAR_FROM_DATE + " = ",
+    	                                null,
+    	                                null);
     	
     	//int curCount = cursor.getCount();
     	if(cursor.moveToFirst()){
@@ -149,6 +157,7 @@ public class SchedularActivity extends Activity {
     			Log.d("SchedualrAcitivity", "id"+cursor.getInt(0)+"subject"+cursor.getString(1));
     		}
     	}
+    	*/
 	}
 
 	@Override

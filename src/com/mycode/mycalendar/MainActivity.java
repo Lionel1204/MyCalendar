@@ -141,6 +141,9 @@ public class MainActivity extends FragmentActivity implements
         Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
         Intent intentSechedular = new Intent(Intent.ACTION_VIEW);
         intentSechedular.setClass(this, SchedularActivity.class);
+        LunarCalendar date = (LunarCalendar)v.getTag();
+        long cellMillis = date.getTimeInMillis();
+        intentSechedular.putExtra("CellDay", cellMillis);
         this.startActivity(intentSechedular);
     }
     
