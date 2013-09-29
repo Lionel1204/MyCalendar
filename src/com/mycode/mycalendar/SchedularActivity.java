@@ -143,8 +143,16 @@ public class SchedularActivity extends Activity {
 
     private void DeleteSchedular() {
         // TODO Auto-generated method stub
+        if (!mHasRecord){
+            return;
+        }
+            
         Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
-        //uri.withAppendedPath(uri, )
+        DateFormat dateFormat = DateFormat.getDateInstance();
+        String where = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT + "=?";
+        String[] whereClause = {dateFormat.format(mCalendar.getTime())};
+        
+        mResolver.delete(uri, where, whereClause);
     }
 
     private void SaveSchedular() {
@@ -161,9 +169,13 @@ public class SchedularActivity extends Activity {
         values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE, mCheckRecurrence.isChecked());
         values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE, (int)mSpinnerRecurrenceStyle.getSelectedItemPosition());
         if (mHasRecord){
-            //Uri updateUri = mResolver.update(uri, values, );
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            String where = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT + "=?";
+            String[] whereClause = {dateFormat.format(mCalendar.getTime())};
+            
+            mResolver.update(uri, values, where, whereClause);
         }else{
-            Uri insertUri = mResolver.insert(uri, values);
+            mResolver.insert(uri, values);
         }
         
     }
@@ -231,6 +243,7 @@ public class SchedularActivity extends Activity {
     	                                null);
 
     	if (cursor.moveToFirst()){
+    	    mHasRecord = true;
             //get the index of column in cursor, it is different from the database
     	    int iSubject = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT);
     	    //int iFromDateText = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT);
@@ -267,6 +280,8 @@ public class SchedularActivity extends Activity {
     	    calendar.setTimeInMillis(milliToDate);
     	    mTxtToDateView.setText(dateFormat.format(calendar.getTime()));
             mTxtToTimeView.setText(timeFormat.format(calendar.getTime()));
+            }else{
+                mHasRecord = false;
             }
     	cursor.close();
 
