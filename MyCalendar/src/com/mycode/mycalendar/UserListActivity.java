@@ -9,6 +9,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -31,6 +34,8 @@ import java.util.Map;
 public class UserListActivity extends ListActivity implements OnCheckedChangeListener{
 
 	private static final int PICK_AVAILABLE_STYLE_REQUEST = 10;
+	public static final String TOTAL_USER_NUMBER = "TotalUserNumber";
+	public static final String CHECKED_USER_NUMBER = "CheckedUserNumber";
 	
     private ArrayList<HashMap<String, Object>> mListItems;
     private ListView mListView = null;
@@ -310,6 +315,44 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
     }
 
     @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+    	MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.user_list_select_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch(item.getItemId()){
+        case R.id.menu_action_submit:
+            
+            
+            Intent intent = new Intent();  
+            int totalUser = mListView.getCount();
+            int checkedUser = 0;
+            intent.putExtra(TOTAL_USER_NUMBER, totalUser);
+            
+            for (int i = 0; i < totalUser; i++) {
+    			View view = (View) mListView.getChildAt(i);
+    			CheckBox cb = (CheckBox) view.findViewById(R.id.nameCheck);
+    			if(cb.isChecked()){
+    				checkedUser++;
+    			}
+    		}
+            intent.putExtra(CHECKED_USER_NUMBER, checkedUser);
+            
+            setResult(RESULT_OK, intent);  
+            this.finish();
+            break;
+        default:
+            break;
+    }
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         // TODO Auto-generated method stub
         int row = (Integer) buttonView.getTag();

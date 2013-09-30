@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ public class MainActivity extends FragmentActivity implements
     OnDateSetListener, OnMenuItemClickListener, OnFocusChangeListener {
 
 	public static final String CHOOSED_DAY = "ChoosedDay";
+	public static final int PICK_CLICK_CELL_REQUEST_CODE = 15;
 	
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
@@ -34,6 +36,8 @@ public class MainActivity extends FragmentActivity implements
     private TextView mTxtTitleGregorian;
     private TextView mTxtTitleAddition;
     private TextView mTxtTitleLunar;
+    
+    private ImageView mCellImgView;
     
     final static int mMonthAYear = 12;
     
@@ -111,8 +115,6 @@ public class MainActivity extends FragmentActivity implements
             default:
                     break;
         }
-        
-        
         return false;
     }
     
@@ -139,14 +141,44 @@ public class MainActivity extends FragmentActivity implements
         
     }
     
-    public void onCellClick(View v) {
-        Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+    @Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		// TODO Auto-generated method stub
+    	
+    	if(PICK_CLICK_CELL_REQUEST_CODE == requestCode){
+    		if(RESULT_OK == resultCode){
+    			
+				int totalUser = intent.getIntExtra(
+						UserListActivity.TOTAL_USER_NUMBER, 1);
+				int checkedUser = intent.getIntExtra(
+						UserListActivity.CHECKED_USER_NUMBER, 1);
+				
+				if ((totalUser - checkedUser) <= 1) {
+					mCellImgView.setImageDrawable(getResources().getDrawable(
+							R.drawable.img_cell_green));
+				} else if ((checkedUser * 2) >= totalUser) {
+
+					mCellImgView.setImageDrawable(getResources().getDrawable(
+							R.drawable.img_cell_yellow));
+				} else if ((checkedUser * 2) < totalUser) {
+					mCellImgView.setImageDrawable(getResources().getDrawable(
+							R.drawable.img_cell_red));
+				}
+			}
+    	}
+    	
+		super.onActivityResult(requestCode, resultCode, intent);
+	}
+
+	public void onCellClick(View v) {
+    	mCellImgView = (ImageView)v.findViewById(R.id.imgCellHint);
+        //Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
         Intent intentUserList = new Intent(Intent.ACTION_VIEW);
         intentUserList.setClass(this, UserListActivity.class);
         LunarCalendar date = (LunarCalendar)v.getTag();
         long cellMillis = date.getTimeInMillis();
         intentUserList.putExtra(CHOOSED_DAY, cellMillis);
-        this.startActivity(intentUserList);
+        this.startActivityForResult(intentUserList, PICK_CLICK_CELL_REQUEST_CODE);
     }
     
 
