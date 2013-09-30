@@ -148,7 +148,7 @@
         <item>每年</item>
     </string-array>
     <string name="menu_action_delete">Delete</string>
-    <string name="calendar_choose_your_available_day">Please choose your available_day!</string>
+    <string name="calendar_choose_your_available_day">Choose available day and Click me</string>
     <string name="choose_all_day">All Day</string>
     <string name="choose_morning">Morning</string>
     <string name="choose_afternoon">Afternoon</string>
