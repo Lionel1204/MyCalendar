@@ -88,7 +88,7 @@ public final class R {
         public static final int shape_calendar_titlebar=0x7f02001a;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0018;
+        public static final int action_settings=0x7f0a0019;
         public static final int btnChooseDate=0x7f0a000c;
         public static final int calendarChoose=0x7f0a000d;
         public static final int checkAfternoon=0x7f0a000a;
@@ -100,9 +100,9 @@ public final class R {
         public static final int imgPopupMenu=0x7f0a0004;
         public static final int imgPreviousMonth=0x7f0a0000;
         public static final int imgToday=0x7f0a0003;
-        public static final int listView=0x7f0a0016;
-        public static final int menuGoto=0x7f0a0019;
-        public static final int menu_action_ok=0x7f0a0017;
+        public static final int listView=0x7f0a0017;
+        public static final int menuGoto=0x7f0a001a;
+        public static final int menu_action_ok=0x7f0a0018;
         public static final int nameCheck=0x7f0a0014;
         public static final int pager=0x7f0a0007;
         public static final int tableViewCalendar=0x7f0a0011;
@@ -111,6 +111,7 @@ public final class R {
         public static final int txtTitleAddition=0x7f0a0006;
         public static final int txtTitleGreorian=0x7f0a0001;
         public static final int txtTitleLunar=0x7f0a0005;
+        public static final int txtUserId=0x7f0a0016;
         public static final int txtUserName=0x7f0a0015;
         public static final int txtWeekIndex=0x7f0a0012;
         public static final int txtWeekIndexChinese=0x7f0a0013;

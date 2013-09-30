@@ -25,31 +25,25 @@ public class SchedularDbHelper extends SQLiteOpenHelper {
         		 + " ("
         		 + SchedularTableMetaData._ID
         		 + " INTEGER PRIMARY KEY,"
+        		 + SchedularTableMetaData.SCHEDULAR_USER_NAME
+       		     + " TEXT"
         		 + SchedularTableMetaData.SCHEDULAR_USER_ID
         		 + " INTEGER,"
-        		 + SchedularTableMetaData.SCHEDULAR_USER_NAME
-        		 + " TEXT,"
         		 + SchedularTableMetaData.SCHEDULAR_DATE
         		 + " INTEGER,"
         		 + SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE
         		 + " INTEGER"
         		 + ");");
-        
+        /*
         db.execSQL("CREATE TABLE IF NOT EXISTS "
        		 + SchedularTableMetaData.TABLE_NAME_USER_NAME
        		 + " ("
        		 + SchedularTableMetaData._ID
        		 + " INTEGER PRIMARY KEY,"
-       		 + SchedularTableMetaData.SCHEDULAR_USER_ID
-       		 + " INTEGER,"
        		 + SchedularTableMetaData.SCHEDULAR_USER_NAME
-       		 + " TEXT,"
-       		 + SchedularTableMetaData.SCHEDULAR_DATE
-       		 + " INTEGER,"
-       		 + SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE
-       		 + " INTEGER"
+       		 + " TEXT"
        		 + ");");
-        
+        */
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -34,14 +35,17 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
     private ArrayList<HashMap<String, Object>> mListItems;
     private ListView mListView = null;
     private String[] mUserNames = new String[]{"Bob", "Jimmy", "Tim"};
-    private String[] mItemControlsName = new String[]{"nameCheck", "txtUserName"};
-    private int[] mListItemControls = new int[]{R.id.nameCheck, R.id.txtUserName};
+    private ArrayList<HashMap<String, Object>> mUserInformation;
+    private String[] mItemControlsName = new String[]{"nameCheck", "txtUserName", "txtUserId"};
+    private int[] mListItemControls = new int[]{R.id.nameCheck, R.id.txtUserName, R.id.txtUserId};
     private int mAvailableStyle = 0;
     private long mPickDate = 0;
-    private long mItemId = 0;
+    private int mItemId = 0;
+    private String mItemName = null;
     private boolean mHasRecord = false;
     private ContentResolver mResolver = null;
-    
+    private Cursor mCursor = null;
+    private boolean misListInit = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -49,27 +53,49 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         //setContentView(R.layout.view_user_list);
          
         mListItems = new ArrayList<HashMap<String,Object>>(); 
+
+        MySimpleAdapter adapter = new MySimpleAdapter( 
+                this, 
+                mListItems,
+                R.layout.view_name_list,
+                mItemControlsName,
+                mListItemControls); 
+       
+        this.setListAdapter(adapter);
         
 
-        /*
         for(int i=0;i<mUserNames.length;i++) {
             HashMap<String, Object>map = new HashMap<String, Object>();
             map.put(mItemControlsName[0], false);
             map.put(mItemControlsName[1], mUserNames[i]);
             mListItems.add(map);
         }
-        */
         
         Intent intent = this.getIntent();
         mPickDate = intent.getLongExtra(MainActivity.CHOOSED_DAY, System.currentTimeMillis());
         mResolver = this.getContentResolver();
         mListView = getListView();
         
+        //simulate to add user
+        
+        QueryDatabase();
+        
+        
         //insertARecord();
-        UpdateControl();
+        //UpdateControl();
     }
     
-    private void insertARecord() {
+    @Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+    	if (mCursor != null){
+    		mCursor.close();
+    		mCursor = null;
+    	}
+		super.onDestroy();
+	}
+
+	private void insertARecord() {
 		// TODO Auto-generated method stub
     	 Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
 	     ContentValues values = new ContentValues();
@@ -83,60 +109,50 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
 	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
-    	
+		
+		
 		super.onStart();
 	}
-
-	private void UpdateControl() {
-		// TODO Auto-generated method stub
-		Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+	
+	private void QueryDatabase(){
+        Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
 		
 		String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE
   		      + "=? ";
         String[] selectionArgs = {String.valueOf(mPickDate)};
 
         
-		Cursor cursor = mResolver.query(uri,
+		mCursor = mResolver.query(uri,
                 null,
                 selection,
                 selectionArgs,
                 null);
-		
-		int iUserId = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID);
-		int iUserName = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME);
-		int iDate = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE);
-		int iAvalibleStyle = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
+		/*
+		int iUserId = mCursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID);
+		int iUserName = mCursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME);
+		int iDate = mCursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE);
+		int iAvalibleStyle = mCursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
 		
 		int[] views = new int[]{R.id.txtUserName, R.id.nameCheck};
 		String[] columns = new String[]{SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME,
 				SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE};
+*/
+	}
+	
+	
+	private void UpdateControl(CheckBox cb, TextView txtView) {
 		
+		int iAvalibleStyle = mCursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
+		int iUserName = mCursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME);
 		
-		
-        MySimpleAdapter adapter = new MySimpleAdapter( 
-                this, 
-                mListItems,
-                R.layout.view_name_list,
-                columns,
-                views); 
-       
-        this.setListAdapter(adapter);
-		
-        
-		if (cursor.moveToFirst()) {
-			for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-				HashMap<String, Object> map = new HashMap<String, Object>();
-				long index = cursor.getLong(iUserId);
-				int avalibalStyle = cursor.getInt(iAvalibleStyle);
-				String string = cursor.getString(iUserName);
-				map.put(columns[0], cursor.getString(iUserName));
-				map.put(columns[1],
-						(boolean) (0 != cursor.getInt(iAvalibleStyle)));
-				mListItems.add(map);
-
+		if(mCursor.moveToFirst()){
+			for(mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()){
+				String userName = mCursor.getString(iUserName);
+				if(userName.equals(txtView.getText())){
+					 cb.setChecked( (boolean)(0 != mCursor.getInt(iAvalibleStyle)));
+				}
 			}
 		}
-		cursor.close();
 	}
 	
 
@@ -159,6 +175,10 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
                 
                 
                 SubmitRecord();
+                
+                UpdateList();
+                
+                mAvailableStyle = 0;
             }
         }
         
@@ -166,29 +186,45 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         
     }
 
+	private void UpdateList(){
+		
+		int listItemCount = mListView.getCount();
+		for (int i = 0; i < listItemCount; i++) {
+			View view = (View) mListView.getChildAt(i);
+			CheckBox cb = (CheckBox) view.findViewById(R.id.nameCheck);
+			TextView txtName = (TextView) view.findViewById(R.id.txtUserName);
+			
+			if (mItemName.equals(txtName.getText().toString())){
+				cb.setChecked((boolean) (0 != mAvailableStyle));
+			}
+		}
+	}
 	private void SubmitRecord() {
 		// TODO Auto-generated method stub
 		 Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
 	     ContentValues values = new ContentValues();
 	     values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID, mItemId);
-		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, mUserNames[(int) mItemId]);
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, mItemName);
 		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE, mPickDate);
 		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, mAvailableStyle);
 		 
-         mAvailableStyle = 0;
+         
          
          if (mHasRecord){
              
              String where = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID 
-            		      + "=? AND"
+            		      + "=? AND "
             		      + SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE
             		      + "=? ";
              String[] whereClause = {String.valueOf(mItemId), String.valueOf(mPickDate)};
              
              mResolver.update(uri, values, where, whereClause);
+             mHasRecord = false;
          }else{
              mResolver.insert(uri, values);
          }
+         
+         
 	}
 	
 
@@ -196,7 +232,10 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
     protected void onListItemClick(ListView l, View v, int position, long id) {
         // TODO Auto-generated method stub
         super.onListItemClick(l, v, position, id);
-        mItemId = id;
+        CheckBox cb = (CheckBox) v.findViewById(R.id.nameCheck);
+        TextView txtName = (TextView)v.findViewById(R.id.txtUserName);
+        mItemId = (Integer)cb.getTag();
+        mItemName = txtName.getText().toString();
         Intent intentChooseAvailableType = new Intent(Intent.ACTION_VIEW);
         intentChooseAvailableType.setClass(this, ChooseAvailableType.class);
 
@@ -204,8 +243,10 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
 		
 		String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID
-  		      + "=? ";
-        String[] selectionArgs = {String.valueOf(id)};
+  		      + "=? AND "
+  		      + SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE
+              + "=? ";
+        String[] selectionArgs = {String.valueOf(mItemId), String.valueOf(mPickDate)};
 
         
 		Cursor cursor = mResolver.query(uri,
@@ -223,15 +264,16 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
 		}
 		cursor.close();
 		
-		boolean isAllDayStyle = (boolean)((avalibleStyle & 0x01000) != 0);
-        boolean isMorningStyle = (boolean)((avalibleStyle & 0x0100) != 0);
-        boolean isAfternoonStyle = (boolean)((avalibleStyle & 0x010) != 0);
+		boolean isAllDayStyle = (boolean)((avalibleStyle & 0x08) != 0);
+        boolean isMorningStyle = (boolean)((avalibleStyle & 0x04) != 0);
+        boolean isAfternoonStyle = (boolean)((avalibleStyle & 0x02) != 0);
         boolean isEveningStyle = (boolean)((avalibleStyle & 0x01) != 0);
         
 		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_ALLDAY, isAllDayStyle);
 		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_MORNING, isMorningStyle);
 		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_AFTERNOON, isAfternoonStyle);
 		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_EVENING, isEveningStyle);
+		
 		
         this.startActivityForResult(intentChooseAvailableType, PICK_AVAILABLE_STYLE_REQUEST);
         //Toast.makeText(this, "position"+position+"id"+id, Toast.LENGTH_LONG).show();
@@ -249,14 +291,21 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
-            View view =  super.getView(position, convertView, parent);
-            if(view!=null) {
-            CheckBox cb = (CheckBox) view.findViewById(R.id.nameCheck);
-            cb.setTag(position);
-            cb.setOnCheckedChangeListener(UserListActivity.this);
-            }
-            return view;
-        }
+			View view = super.getView(position, convertView, parent);
+			if (view != null) {
+				CheckBox cb = (CheckBox) view.findViewById(R.id.nameCheck);
+				TextView txtView = (TextView) view
+						.findViewById(R.id.txtUserName);
+				cb.setTag(txtView.getText().hashCode());
+				cb.setOnCheckedChangeListener(UserListActivity.this);
+				
+				UpdateControl(cb, txtView);
+				
+				misListInit = true;
+				
+			}
+			return view;
+		}
     
     }
 

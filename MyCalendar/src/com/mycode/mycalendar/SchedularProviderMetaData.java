@@ -17,14 +17,14 @@ public class SchedularProviderMetaData {
 		private SchedularTableMetaData() {}
 		
 		public static final String TABLE_NAME_SCHEDULAR = SCHEDULAR_TABLE_NAME;
-		public static final String TABLE_NAME_USER_NAME = "UserName";
+		public static final String TABLE_NAME_USER_NAME = "UserNameTable";
 		
 		//uri and MIME type definitions
 		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/CalendarSchedular");
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.mycode.mycalendar";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.mycode.mycalendar";
 		
-		public static final String DEFAULT_SORT_ORDER = "_id DESC";
+		public static final String DEFAULT_SORT_ORDER = "_id ASC";
 		
 		//additional Columns start here
 		public static final String SCHEDULAR_USER_ID = "UserId";

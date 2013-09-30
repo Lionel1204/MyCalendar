@@ -17,55 +17,47 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-public class SchedularProvider extends ContentProvider {
+public class UserNameProvider extends ContentProvider {
 
 	//Setup projection Map
-	private static HashMap<String, String> sSchedularProjectionMap;
-	
-    private static final UriMatcher sUriMatcher;
-    private static final int CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR = 1;
-    private static final int CALENDAR_SCHEDULAR_SIGLE_URI_INDICATOR = 2;
-    
-    private SchedularDbHelper mDbHelper;
-    
-	static {
-		sSchedularProjectionMap = new HashMap<String, String>();
-		sSchedularProjectionMap.put(SchedularTableMetaData._ID, 
-				                    SchedularTableMetaData._ID);
+		private static HashMap<String, String> sSchedularProjectionMap;
 		
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_USER_ID, 
-                                    SchedularTableMetaData.SCHEDULAR_USER_ID);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, 
-                                    SchedularTableMetaData.SCHEDULAR_USER_NAME);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_DATE, 
-                                    SchedularTableMetaData.SCHEDULAR_DATE);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, 
-                                    SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
-		
-		sUriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
-        
-		//add match code
-		sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY, 
-				          "CalendarSchedular", 
-				          CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR);
-		sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY, 
-				          "CalendarSchedular/#", 
-				          CALENDAR_SCHEDULAR_SIGLE_URI_INDICATOR);
-		
-	}
-	
+	    private static final UriMatcher sUriMatcher;
+	    private static final int USER_NAME_COLLECTION_URI_INDICATOR = 1;
+	    private static final int USER_NAME_SIGLE_URI_INDICATOR = 2;
+	    
+	    private SchedularDbHelper mDbHelper;
+	    
+		static {
+			sSchedularProjectionMap = new HashMap<String, String>();
+			sSchedularProjectionMap.put(SchedularTableMetaData._ID, 
+					                    SchedularTableMetaData._ID);
+			
+			sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, 
+	                                    SchedularTableMetaData.SCHEDULAR_USER_NAME);
+						
+			sUriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
+	        
+			//add match code
+			sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY, 
+					          "UserNameTable", 
+					          USER_NAME_COLLECTION_URI_INDICATOR);
+			sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY, 
+					          "UserNameTable/#", 
+					          USER_NAME_SIGLE_URI_INDICATOR);
+		}
 	@Override
 	public int delete(Uri uri, String whereClause, String[] whereArgs) {
 		// TODO Auto-generated method stub
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		int count = 0;
 		switch (sUriMatcher.match(uri)){
-		case CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR:
-			count = db.delete(SchedularTableMetaData.TABLE_NAME_SCHEDULAR, whereClause, whereArgs);
+		case USER_NAME_COLLECTION_URI_INDICATOR:
+			count = db.delete(SchedularTableMetaData.TABLE_NAME_USER_NAME, whereClause, whereArgs);
 			break;
-		case CALENDAR_SCHEDULAR_SIGLE_URI_INDICATOR:
+		case USER_NAME_SIGLE_URI_INDICATOR:
 			String rowId = uri.getPathSegments().get(1);//get id
-			count = db.delete(SchedularTableMetaData.TABLE_NAME_SCHEDULAR, 
+			count = db.delete(SchedularTableMetaData.TABLE_NAME_USER_NAME, 
 					          SchedularTableMetaData._ID 
 					              + "=" 
 					              + rowId 
@@ -83,9 +75,9 @@ public class SchedularProvider extends ContentProvider {
 	public String getType(Uri uri) {
 		// TODO Auto-generated method stub
 		switch(sUriMatcher.match(uri)){
-		case CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR:
+		case USER_NAME_COLLECTION_URI_INDICATOR:
 			return SchedularTableMetaData.CONTENT_TYPE;
-		case CALENDAR_SCHEDULAR_SIGLE_URI_INDICATOR:
+		case USER_NAME_SIGLE_URI_INDICATOR:
 			return SchedularTableMetaData.CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);	
@@ -95,7 +87,7 @@ public class SchedularProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues initialValues) {
 		// TODO Auto-generated method stub
-		if (sUriMatcher.match(uri) != CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR){
+		if (sUriMatcher.match(uri) != USER_NAME_COLLECTION_URI_INDICATOR){
 			throw new IllegalArgumentException("Unknown URI " + uri);	
 		}
 		
@@ -117,23 +109,15 @@ public class SchedularProvider extends ContentProvider {
 		
 		//Make sure to set the fields
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_USER_ID)){
-			values.put(SchedularTableMetaData.SCHEDULAR_USER_ID, "1");
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_USER_NAME)){
+		    values.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, "DefaultName");
 		}
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_DATE)){
-			values.put(SchedularTableMetaData.SCHEDULAR_DATE, now);
-		}
-		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE)){
-			values.put(SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, 8);
-		}
-				
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		
 		//insert data
-		long rowId = db.insert(SchedularTableMetaData.TABLE_NAME_SCHEDULAR, 
-				               SchedularTableMetaData.SCHEDULAR_USER_ID, values);
+		long rowId = db.insert(SchedularTableMetaData.TABLE_NAME_USER_NAME, 
+				               SchedularTableMetaData.SCHEDULAR_USER_NAME, values);
 		//insert sucessfully and notify change
 		if (rowId > 0){
 			Uri insertedSchedularUri = ContentUris.withAppendedId(SchedularTableMetaData.CONTENT_URI, rowId);
@@ -148,22 +132,23 @@ public class SchedularProvider extends ContentProvider {
 	public boolean onCreate() {
 		// TODO Auto-generated method stub
 		mDbHelper = new SchedularDbHelper(getContext());
-		return true;
+		return false;
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
 			String sortOrder) {
 		// TODO Auto-generated method stub
-		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 		
-		qb.setTables(SchedularTableMetaData.TABLE_NAME_SCHEDULAR);
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+		
+		qb.setTables(SchedularTableMetaData.TABLE_NAME_USER_NAME);
 		qb.setProjectionMap(sSchedularProjectionMap);
 		
 		switch (sUriMatcher.match(uri)){
-		case CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR:
+		case USER_NAME_COLLECTION_URI_INDICATOR:
 			break;
-		case CALENDAR_SCHEDULAR_SIGLE_URI_INDICATOR:
+		case USER_NAME_SIGLE_URI_INDICATOR:
 			
 			qb.appendWhere(SchedularTableMetaData._ID
 					     + "="
@@ -190,12 +175,12 @@ public class SchedularProvider extends ContentProvider {
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		int count = 0;
 		switch (sUriMatcher.match(uri)){
-		case CALENDAR_SCHEDULAR_COLLECTION_URI_INDICATOR:
-			count = db.update(SchedularTableMetaData.TABLE_NAME_SCHEDULAR, values, whereClause, whereArgs);
+		case USER_NAME_COLLECTION_URI_INDICATOR:
+			count = db.update(SchedularTableMetaData.TABLE_NAME_USER_NAME, values, whereClause, whereArgs);
 			break;
-		case CALENDAR_SCHEDULAR_SIGLE_URI_INDICATOR:
+		case USER_NAME_SIGLE_URI_INDICATOR:
 			String rowId = uri.getPathSegments().get(1);//get id
-			count = db.update(SchedularTableMetaData.TABLE_NAME_SCHEDULAR, 
+			count = db.update(SchedularTableMetaData.TABLE_NAME_USER_NAME, 
 					          values, 
 					          SchedularTableMetaData._ID 
 					              + "=" 
