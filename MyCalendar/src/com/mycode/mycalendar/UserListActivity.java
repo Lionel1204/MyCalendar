@@ -1,9 +1,14 @@
 package com.mycode.mycalendar;
 
 import android.app.ListActivity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -13,6 +18,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,43 +29,171 @@ import java.util.Map;
 
 public class UserListActivity extends ListActivity implements OnCheckedChangeListener{
 
+	private static final int PICK_AVAILABLE_STYLE_REQUEST = 10;
+	
     private ArrayList<HashMap<String, Object>> mListItems;
+    private ListView mListView = null;
     private String[] mUserNames = new String[]{"Bob", "Jimmy", "Tim"};
     private String[] mItemControlsName = new String[]{"nameCheck", "txtUserName"};
     private int[] mListItemControls = new int[]{R.id.nameCheck, R.id.txtUserName};
+    private int mAvailableStyle = 0;
+    private long mPickDate = 0;
+    private long mItemId = 0;
+    private boolean mHasRecord = false;
+    private ContentResolver mResolver = null;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.view_user_list);
-        
+         
         mListItems = new ArrayList<HashMap<String,Object>>(); 
+        
+
+        /*
+        for(int i=0;i<mUserNames.length;i++) {
+            HashMap<String, Object>map = new HashMap<String, Object>();
+            map.put(mItemControlsName[0], false);
+            map.put(mItemControlsName[1], mUserNames[i]);
+            mListItems.add(map);
+        }
+        */
+        
+        Intent intent = this.getIntent();
+        mPickDate = intent.getLongExtra(MainActivity.CHOOSED_DAY, System.currentTimeMillis());
+        mResolver = this.getContentResolver();
+        mListView = getListView();
+        
+        insertARecord();
+        UpdateControl();
+    }
+    
+    private void insertARecord() {
+		// TODO Auto-generated method stub
+    	 Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+	     ContentValues values = new ContentValues();
+	     values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID, 1);
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, "Jim");
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE, mPickDate);
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, 4);
+		 mResolver.insert(uri, values);
+    }
+
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+    	
+		super.onStart();
+	}
+
+	private void UpdateControl() {
+		// TODO Auto-generated method stub
+		Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+		
+		String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE
+  		      + "=? ";
+        String[] selectionArgs = {String.valueOf(mPickDate)};
+
+        
+		Cursor cursor = mResolver.query(uri,
+                null,
+                selection,
+                selectionArgs,
+                null);
+		
+		int iUserId = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID);
+		int iUserName = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME);
+		int iDate = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE);
+		int iAvalibleStyle = cursor.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
+		
+		int[] views = new int[]{R.id.txtUserName, R.id.nameCheck};
+		String[] columns = new String[]{SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME,
+				SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE};
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		
         MySimpleAdapter adapter = new MySimpleAdapter( 
                 this, 
                 mListItems,
                 R.layout.view_name_list,
-                mItemControlsName,
-                mListItemControls); 
-        
+                columns,
+                views); 
+       
         this.setListAdapter(adapter);
-        
-        for(int i=0;i<mUserNames.length;i++) {
-            HashMap<String, Object>map = new HashMap<String, Object>();
-            map.put(mItemControlsName[0], true);
-            map.put(mItemControlsName[1], mUserNames[i]);
-            mListItems.add(map);
-        }
+		
+		if (cursor.moveToFirst()){
+			long index = cursor.getLong(iUserId);
+			int avalibalStyle = cursor.getInt(iAvalibleStyle);
+			String string  = cursor.getString(iUserName);
+			map.put(columns[0], cursor.getString(iUserName));
+	        map.put(columns[1], (boolean)(0 != cursor.getInt(iAvalibleStyle)));
+	        mListItems.add(map);
+	    }
+	}
+	
 
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        // TODO Auto-generated method stub
+        if (PICK_AVAILABLE_STYLE_REQUEST == requestCode){
+            if (RESULT_OK == resultCode){
+
+                boolean isAllDayStyle = intent.getBooleanExtra(ChooseAvailableType.TAG_ALLDAY, false);
+                boolean isMorningStyle = intent.getBooleanExtra(ChooseAvailableType.TAG_MORNING, false);
+                boolean isAfternoonStyle = intent.getBooleanExtra(ChooseAvailableType.TAG_AFTERNOON, false);
+                boolean isEveningStyle = intent.getBooleanExtra(ChooseAvailableType.TAG_EVENING, false);
+                
+                
+                mAvailableStyle = ((isAllDayStyle?1:0) << 3)
+                        | ((isMorningStyle?1:0) << 2)
+                        | ((isAfternoonStyle?1:0) << 1)
+                        | (isEveningStyle?1:0);
+                
+                
+                SubmitRecord();
+            }
+        }
+        
+        super.onActivityResult(requestCode, resultCode, intent);
+        
     }
+
+	private void SubmitRecord() {
+		// TODO Auto-generated method stub
+		 Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+	     ContentValues values = new ContentValues();
+	     values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID, mItemId);
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, mUserNames[(int) mItemId]);
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE, mPickDate);
+		 values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, mAvailableStyle);
+		 
+         mAvailableStyle = 0;
+         
+         if (mHasRecord){
+             
+             String where = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID 
+            		      + "=? AND"
+            		      + SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE
+            		      + "=? ";
+             String[] whereClause = {String.valueOf(mItemId), String.valueOf(mPickDate)};
+             
+             mResolver.update(uri, values, where, whereClause);
+         }else{
+             mResolver.insert(uri, values);
+         }
+	}
+	
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         // TODO Auto-generated method stub
         super.onListItemClick(l, v, position, id);
-        Intent intentChooseAvaliableDay = new Intent(Intent.ACTION_VIEW);
-        intentChooseAvaliableDay.setClass(this, ChooseAvailableDay.class);
+        mItemId = id;
+        Intent intentChooseAvailableType = new Intent(Intent.ACTION_VIEW);
+        intentChooseAvailableType.setClass(this, ChooseAvailableType.class);
 
-        this.startActivity(intentChooseAvaliableDay);
+        this.startActivityForResult(intentChooseAvailableType, PICK_AVAILABLE_STYLE_REQUEST);
         //Toast.makeText(this, "position"+position+"id"+id, Toast.LENGTH_LONG).show();
     }
     
@@ -91,7 +226,5 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         //Toast.makeText(this, "第"+row+"行的checkBox被点击", Toast.LENGTH_LONG).show();
     }
 
-
-    
 }
 

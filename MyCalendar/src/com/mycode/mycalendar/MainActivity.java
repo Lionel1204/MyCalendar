@@ -23,6 +23,8 @@ import java.util.Calendar;
 public class MainActivity extends FragmentActivity implements
     OnDateSetListener, OnMenuItemClickListener, OnFocusChangeListener {
 
+	public static final String CHOOSED_DAY = "ChoosedDay";
+	
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private View mImgPreviousMonth;
@@ -143,7 +145,7 @@ public class MainActivity extends FragmentActivity implements
         intentUserList.setClass(this, UserListActivity.class);
         LunarCalendar date = (LunarCalendar)v.getTag();
         long cellMillis = date.getTimeInMillis();
-        //intentUserList.putExtra("CellDay", cellMillis);
+        intentUserList.putExtra(CHOOSED_DAY, cellMillis);
         this.startActivity(intentUserList);
     }
     

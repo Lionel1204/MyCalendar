@@ -25,21 +25,13 @@ public class SchedularDbHelper extends SQLiteOpenHelper {
         		 + " ("
         		 + SchedularTableMetaData._ID
         		 + " INTEGER PRIMARY KEY,"
-        		 + SchedularTableMetaData.SCHEDULAR_SUBJECT
+        		 + SchedularTableMetaData.SCHEDULAR_USER_ID
+        		 + " INTEGER,"
+        		 + SchedularTableMetaData.SCHEDULAR_USER_NAME
         		 + " TEXT,"
-        		 + SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT
-        		 + " TEXT,"
-        		 + SchedularTableMetaData.SCHEDULAR_FROM_DATE
+        		 + SchedularTableMetaData.SCHEDULAR_DATE
         		 + " INTEGER,"
-        		 + SchedularTableMetaData.SCHEDULAR_TO_DATE
-        		 + " INTEGER,"
-        		 + SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY
-        		 + " INTEGER,"
-        		 + SchedularTableMetaData.SCHEDULAR_DESCRIPTION
-        		 + " TEXT,"
-        		 + SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE
-        		 + " INTEGER,"
-        		 + SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE
+        		 + SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE
         		 + " INTEGER"
         		 + ");");
 	}

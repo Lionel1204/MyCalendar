@@ -33,20 +33,14 @@ public class SchedularProvider extends ContentProvider {
 		sSchedularProjectionMap.put(SchedularTableMetaData._ID, 
 				                    SchedularTableMetaData._ID);
 		
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_SUBJECT, 
-                                    SchedularTableMetaData.SCHEDULAR_SUBJECT);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_FROM_DATE, 
-                                    SchedularTableMetaData.SCHEDULAR_FROM_DATE);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_TO_DATE, 
-                                    SchedularTableMetaData.SCHEDULAR_TO_DATE);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY, 
-                                    SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_DESCRIPTION, 
-                                    SchedularTableMetaData.SCHEDULAR_DESCRIPTION);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE, 
-                                    SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE);
-		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE, 
-                                    SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE);
+		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_USER_ID, 
+                                    SchedularTableMetaData.SCHEDULAR_USER_ID);
+		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, 
+                                    SchedularTableMetaData.SCHEDULAR_USER_NAME);
+		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_DATE, 
+                                    SchedularTableMetaData.SCHEDULAR_DATE);
+		sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, 
+                                    SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
 		
 		sUriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
         
@@ -123,43 +117,27 @@ public class SchedularProvider extends ContentProvider {
 		
 		//Make sure to set the fields
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_SUBJECT)){
-			values.put(SchedularTableMetaData.SCHEDULAR_SUBJECT, "My default Schedule");
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_USER_ID)){
+			values.put(SchedularTableMetaData.SCHEDULAR_USER_ID, "1");
 		}
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT)){
-		    values.put(SchedularTableMetaData.SCHEDULAR_FROM_DATE_TEXT, today);
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_USER_NAME)){
+		    values.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, "DefaultName");
 		}
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_FROM_DATE)){
-			values.put(SchedularTableMetaData.SCHEDULAR_FROM_DATE, now);
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_DATE)){
+			values.put(SchedularTableMetaData.SCHEDULAR_DATE, now);
 		}
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_TO_DATE)){
-			values.put(SchedularTableMetaData.SCHEDULAR_TO_DATE, now);
+		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE)){
+			values.put(SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE, 8);
 		}
-		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY)){
-			values.put(SchedularTableMetaData.SCHEDULAR_IS_ALL_DAY, true);
-		}
-		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_DESCRIPTION)){
-			values.put(SchedularTableMetaData.SCHEDULAR_DESCRIPTION, "N/A");
-		}
-
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE)){
-			values.put(SchedularTableMetaData.SCHEDULAR_IS_RECURRENCE, false);
-		}
-		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE)){
-			values.put(SchedularTableMetaData.SCHEDULAR_RECURRENCE_STYLE, 0);
-		}
-		
+				
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		
 		//insert data
 		long rowId = db.insert(SchedularTableMetaData.TABLE_NAME, 
-				               SchedularTableMetaData.SCHEDULAR_SUBJECT, values);
+				               SchedularTableMetaData.SCHEDULAR_USER_ID, values);
 		//insert sucessfully and notify change
 		if (rowId > 0){
 			Uri insertedSchedularUri = ContentUris.withAppendedId(SchedularTableMetaData.CONTENT_URI, rowId);
