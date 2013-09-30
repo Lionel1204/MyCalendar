@@ -16,7 +16,8 @@ public class SchedularProviderMetaData {
 	public static final class SchedularTableMetaData implements BaseColumns {
 		private SchedularTableMetaData() {}
 		
-		public static final String TABLE_NAME = SCHEDULAR_TABLE_NAME;
+		public static final String TABLE_NAME_SCHEDULAR = SCHEDULAR_TABLE_NAME;
+		public static final String TABLE_NAME_USER_NAME = "UserName";
 		
 		//uri and MIME type definitions
 		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/CalendarSchedular");

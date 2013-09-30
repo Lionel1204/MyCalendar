@@ -65,7 +65,7 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         mResolver = this.getContentResolver();
         mListView = getListView();
         
-        insertARecord();
+        //insertARecord();
         UpdateControl();
     }
     
@@ -111,7 +111,7 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
 		String[] columns = new String[]{SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME,
 				SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE};
 		
-		HashMap<String, Object> map = new HashMap<String, Object>();
+		
 		
         MySimpleAdapter adapter = new MySimpleAdapter( 
                 this, 
@@ -122,14 +122,21 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
        
         this.setListAdapter(adapter);
 		
-		if (cursor.moveToFirst()){
-			long index = cursor.getLong(iUserId);
-			int avalibalStyle = cursor.getInt(iAvalibleStyle);
-			String string  = cursor.getString(iUserName);
-			map.put(columns[0], cursor.getString(iUserName));
-	        map.put(columns[1], (boolean)(0 != cursor.getInt(iAvalibleStyle)));
-	        mListItems.add(map);
-	    }
+        
+		if (cursor.moveToFirst()) {
+			for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				long index = cursor.getLong(iUserId);
+				int avalibalStyle = cursor.getInt(iAvalibleStyle);
+				String string = cursor.getString(iUserName);
+				map.put(columns[0], cursor.getString(iUserName));
+				map.put(columns[1],
+						(boolean) (0 != cursor.getInt(iAvalibleStyle)));
+				mListItems.add(map);
+
+			}
+		}
+		cursor.close();
 	}
 	
 
@@ -193,9 +200,43 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
         Intent intentChooseAvailableType = new Intent(Intent.ACTION_VIEW);
         intentChooseAvailableType.setClass(this, ChooseAvailableType.class);
 
+        //this part should be in the work thread
+        Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+		
+		String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_ID
+  		      + "=? ";
+        String[] selectionArgs = {String.valueOf(id)};
+
+        
+		Cursor cursor = mResolver.query(uri,
+                null,
+                selection,
+                selectionArgs,
+                null);
+		
+		int iAvalibleStyle = cursor
+				.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
+		int avalibleStyle = 0;
+		if (cursor.moveToFirst()) {
+			mHasRecord = true;
+			avalibleStyle = cursor.getInt(iAvalibleStyle);
+		}
+		cursor.close();
+		
+		boolean isAllDayStyle = (boolean)((avalibleStyle & 0x01000) != 0);
+        boolean isMorningStyle = (boolean)((avalibleStyle & 0x0100) != 0);
+        boolean isAfternoonStyle = (boolean)((avalibleStyle & 0x010) != 0);
+        boolean isEveningStyle = (boolean)((avalibleStyle & 0x01) != 0);
+        
+		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_ALLDAY, isAllDayStyle);
+		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_MORNING, isMorningStyle);
+		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_AFTERNOON, isAfternoonStyle);
+		intentChooseAvailableType.putExtra(ChooseAvailableType.TAG_EVENING, isEveningStyle);
+		
         this.startActivityForResult(intentChooseAvailableType, PICK_AVAILABLE_STYLE_REQUEST);
         //Toast.makeText(this, "position"+position+"id"+id, Toast.LENGTH_LONG).show();
     }
+    
     
     private class MySimpleAdapter extends SimpleAdapter {
 

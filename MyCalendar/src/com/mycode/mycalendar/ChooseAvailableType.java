@@ -38,19 +38,25 @@ public class ChooseAvailableType extends Activity implements OnClickListener{
         mCheckMorning.setOnClickListener(this);
         mCheckAfternoon.setOnClickListener(this);
         mCheckEvening.setOnClickListener(this);
+        
+        Intent intent = this.getIntent();
+        mCheckAllDay.setChecked(intent.getBooleanExtra(TAG_ALLDAY, true));
+        mCheckMorning.setChecked(intent.getBooleanExtra(TAG_MORNING, true));
+        mCheckAfternoon.setChecked(intent.getBooleanExtra(TAG_AFTERNOON, true));
+        mCheckEvening.setChecked(intent.getBooleanExtra(TAG_EVENING, true)); 
     }
 
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
         super.onStart();
-        AllDayEnable();
+        CheckAllDayEnable();
     }
     
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
-        AllDayEnable();
+    	CheckAllDayEnable();
     }
 
     @Override
@@ -82,7 +88,7 @@ public class ChooseAvailableType extends Activity implements OnClickListener{
         return super.onOptionsItemSelected(item);
     }
     
-    private void AllDayEnable() {
+    private void CheckAllDayEnable() {
         
         if (mCheckMorning.isChecked()
                 && mCheckAfternoon.isChecked()
