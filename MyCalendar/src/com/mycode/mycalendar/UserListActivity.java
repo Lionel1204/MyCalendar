@@ -83,7 +83,7 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
     		}
     	}
     	
-    	cursor.close();
+    	//cursor.close();
     	
 		if (userNames != null) {
 			for (int i = 0; i < userNames.length; i++) {
