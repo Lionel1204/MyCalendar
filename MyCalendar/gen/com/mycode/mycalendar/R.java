@@ -91,51 +91,54 @@ public final class R {
         public static final int shape_calendar_titlebar=0x7f02001d;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0019;
-        public static final int btnChooseDate=0x7f0a000c;
-        public static final int calendarChoose=0x7f0a000d;
-        public static final int checkAfternoon=0x7f0a000a;
-        public static final int checkAllDay=0x7f0a0008;
-        public static final int checkEvening=0x7f0a000b;
-        public static final int checkMorning=0x7f0a0009;
-        public static final int imgCellHint=0x7f0a000f;
+        public static final int action_settings=0x7f0a001a;
+        public static final int btnChooseDate=0x7f0a000d;
+        public static final int calendarChoose=0x7f0a000e;
+        public static final int checkAfternoon=0x7f0a000b;
+        public static final int checkAllDay=0x7f0a0009;
+        public static final int checkEvening=0x7f0a000c;
+        public static final int checkMorning=0x7f0a000a;
+        public static final int imgCellHint=0x7f0a0010;
         public static final int imgNextMonth=0x7f0a0002;
         public static final int imgPopupMenu=0x7f0a0004;
         public static final int imgPreviousMonth=0x7f0a0000;
         public static final int imgToday=0x7f0a0003;
-        public static final int listView=0x7f0a0017;
-        public static final int menuAddUsers=0x7f0a001a;
-        public static final int menuDeleteUsers=0x7f0a001b;
-        public static final int menuGoto=0x7f0a001c;
-        public static final int menu_action_ok=0x7f0a0018;
-        public static final int menu_action_submit=0x7f0a001d;
-        public static final int nameCheck=0x7f0a0014;
+        public static final int listView=0x7f0a0018;
+        public static final int menuAddUsers=0x7f0a001b;
+        public static final int menuDeleteUsers=0x7f0a001c;
+        public static final int menuGoto=0x7f0a001d;
+        public static final int menu_action_ok=0x7f0a0019;
+        public static final int menu_action_submit=0x7f0a001e;
+        public static final int nameCheck=0x7f0a0015;
         public static final int pager=0x7f0a0007;
-        public static final int tableViewCalendar=0x7f0a0011;
-        public static final int txtCellGregorian=0x7f0a000e;
-        public static final int txtCellLunar=0x7f0a0010;
+        public static final int tableViewCalendar=0x7f0a0012;
+        public static final int txtCellGregorian=0x7f0a000f;
+        public static final int txtCellLunar=0x7f0a0011;
+        public static final int txtPersonName=0x7f0a0008;
         public static final int txtTitleAddition=0x7f0a0006;
         public static final int txtTitleGreorian=0x7f0a0001;
         public static final int txtTitleLunar=0x7f0a0005;
-        public static final int txtUserId=0x7f0a0016;
-        public static final int txtUserName=0x7f0a0015;
-        public static final int txtWeekIndex=0x7f0a0012;
-        public static final int txtWeekIndexChinese=0x7f0a0013;
+        public static final int txtUserId=0x7f0a0017;
+        public static final int txtUserName=0x7f0a0016;
+        public static final int txtWeekIndex=0x7f0a0013;
+        public static final int txtWeekIndexChinese=0x7f0a0014;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int view_available_type_choose=0x7f030001;
-        public static final int view_calendar_choose=0x7f030002;
-        public static final int view_calendar_day_cell=0x7f030003;
-        public static final int view_calendar_table=0x7f030004;
-        public static final int view_calendar_week_index=0x7f030005;
-        public static final int view_name_list=0x7f030006;
-        public static final int view_user_list=0x7f030007;
+        public static final int name_information=0x7f030001;
+        public static final int view_available_type_choose=0x7f030002;
+        public static final int view_calendar_choose=0x7f030003;
+        public static final int view_calendar_day_cell=0x7f030004;
+        public static final int view_calendar_table=0x7f030005;
+        public static final int view_calendar_week_index=0x7f030006;
+        public static final int view_name_list=0x7f030007;
+        public static final int view_user_list=0x7f030008;
     }
     public static final class menu {
         public static final int choose_style_menu=0x7f090000;
         public static final int main=0x7f090001;
-        public static final int user_list_select_menu=0x7f090002;
+        public static final int name_information_menu=0x7f090002;
+        public static final int user_list_select_menu=0x7f090003;
     }
     public static final class string {
         public static final int action_settings=0x7f060001;
@@ -164,6 +167,7 @@ public final class R {
         public static final int menu_action_delete_users=0x7f060026;
         public static final int menu_goto=0x7f06000c;
         public static final int menu_settings=0x7f06000b;
+        public static final int name_information_add_a_name=0x7f060027;
         public static final int schedular_all_day=0x7f060016;
         public static final int schedular_calendar=0x7f060017;
         public static final int schedular_description=0x7f060018;

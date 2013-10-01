@@ -155,5 +155,6 @@
     <string name="choose_evening">Evening</string>
     <string name="menu_action_add_users">Add Users</string>
     <string name="menu_action_delete_users">Delete Users</string>
+    <string name="name_information_add_a_name">Please add a name here</string>
     
 </resources>

@@ -1,6 +1,7 @@
 package com.mycode.mycalendar;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -120,7 +121,9 @@ public class CalendarTableCellCalculator {
         }
         
         //is it busy?
-        int totalUser = 3;
+        SharedPreferences pref = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        
+        int totalUser = pref.getInt("UserCount", 1);
         int checkedUser = 0;
         
         Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;

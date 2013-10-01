@@ -7,7 +7,10 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
@@ -30,6 +33,8 @@ public class MainActivity extends FragmentActivity implements
 
 	public static final String CHOOSED_DAY = "ChoosedDay";
 	public static final int PICK_CLICK_CELL_REQUEST_CODE = 15;
+	public static final int PICK_ADD_USER_REQUEST_CODE = 16;
+	public static final int PICK_DELETE_USER_REQUEST_CODE = 17;
 	
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
@@ -42,7 +47,6 @@ public class MainActivity extends FragmentActivity implements
     private TextView mTxtTitleLunar;
     
     private ImageView mCellImgView;
-    
     final static int mMonthAYear = 12;
     
     @Override
@@ -63,9 +67,28 @@ public class MainActivity extends FragmentActivity implements
         mPager.setAdapter(mPagerAdapter);
         mPager.setOnPageChangeListener(new simplePageChangeListener());
         mPager.setCurrentItem(getTodayMonthIndex());
+        
+        QueryUserCount();
     }
 
-    @Override
+    private void QueryUserCount() {
+		// TODO Auto-generated method stub
+    	Uri uri = SchedularProviderMetaData.UserNameTableMetaData.CONTENT_URI_NAME;
+    	ContentResolver resolver= this.getContentResolver();
+    	Cursor cursor = resolver.query(uri, null, null, null, null);
+    	int userCount = 0;
+    	if(null != cursor){
+    		userCount = cursor.getCount();
+    	}
+    	
+    	SharedPreferences pref = this.getSharedPreferences("preferences",Context.MODE_PRIVATE); 
+    	Editor editor = pref.edit();
+    	editor.putInt("UserCount", userCount);
+    	editor.commit();
+    }
+
+	
+	@Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
@@ -117,10 +140,15 @@ public class MainActivity extends FragmentActivity implements
                 return true;
                 //break;
             case R.id.menuAddUsers:
-            	AddUsers();
+            	Intent intentUserNameAdd = new Intent(Intent.ACTION_VIEW);
+            	intentUserNameAdd.setClass(this, UserNameInformation.class);
+                this.startActivityForResult(intentUserNameAdd, PICK_ADD_USER_REQUEST_CODE);
+            	//AddUsers();
             	break;
             case R.id.menuDeleteUsers:
-            	DeleteUsers();
+            	Intent intentUserNameDelete = new Intent(Intent.ACTION_VIEW);
+            	intentUserNameDelete.setClass(this, UserNameInformation.class);
+                this.startActivityForResult(intentUserNameDelete, PICK_DELETE_USER_REQUEST_CODE);
             	break;
             default:
                     break;
@@ -128,36 +156,38 @@ public class MainActivity extends FragmentActivity implements
         return false;
     }
     
-    private void DeleteUsers() {
+    private void DeleteUsers(String name) {
 		// TODO Auto-generated method stub
-    	String Name = "Lionel";
+    	//String Name = "Lionel";
     	Uri uri = SchedularProviderMetaData.UserNameTableMetaData.CONTENT_URI_NAME;
     	ContentResolver resolver= this.getContentResolver();
     	ContentValues values = new ContentValues();
-    	values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, Name);
+    	values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, name);
     	
     	String whereClause = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME
     		      + "=? ";
-          String[] whereArgs = {Name};
+          String[] whereArgs = {name};
     	resolver.delete(uri, whereClause, whereArgs);
 	}
 
-	private void AddUsers() {
+	private void AddUsers(String name) {
 		// TODO Auto-generated method stub
-    	String Name = "Lionel";
+    	//String Name = "Lionel";
     	Uri uri = SchedularProviderMetaData.UserNameTableMetaData.CONTENT_URI_NAME;
     	ContentResolver resolver= this.getContentResolver();
     	ContentValues values = new ContentValues();
-    	values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, Name);
+    	values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, name);
     	
     	String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME
     		      + "=? ";
-          String[] selectionArgs = {Name};
+          String[] selectionArgs = {name};
     	Cursor cursor = resolver.query(uri, null, selection, selectionArgs, null);
     	
     	
     	if(cursor != null && !cursor.moveToFirst()){
     		resolver.insert(uri, values);
+    	}else{
+    		Toast.makeText(this, "Add name failed!", Toast.LENGTH_SHORT).show();
     	}
     	cursor.close();
     	
@@ -189,15 +219,14 @@ public class MainActivity extends FragmentActivity implements
     @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		// TODO Auto-generated method stub
-    	
-    	if(PICK_CLICK_CELL_REQUEST_CODE == requestCode){
-    		if(RESULT_OK == resultCode){
-    			
-				int totalUser = intent.getIntExtra(
+    	if(RESULT_OK == resultCode){
+            switch (requestCode){
+            case PICK_CLICK_CELL_REQUEST_CODE: 
+            	int totalUser = intent.getIntExtra(
 						UserListActivity.TOTAL_USER_NUMBER, 1);
 				int checkedUser = intent.getIntExtra(
 						UserListActivity.CHECKED_USER_NUMBER, 1);
-				
+
 				if ((totalUser - checkedUser) <= 1) {
 					mCellImgView.setImageDrawable(getResources().getDrawable(
 							R.drawable.img_cell_green));
@@ -209,9 +238,20 @@ public class MainActivity extends FragmentActivity implements
 					mCellImgView.setImageDrawable(getResources().getDrawable(
 							R.drawable.img_cell_red));
 				}
-			}
-    	}
-    	
+            	break;
+            case PICK_ADD_USER_REQUEST_CODE:
+            	String nameAdd = intent.getStringExtra(UserNameInformation.TAG_PERSON_NAME);
+            	AddUsers(nameAdd);
+            	break;
+            case PICK_DELETE_USER_REQUEST_CODE:
+            	String nameDelete = intent.getStringExtra(UserNameInformation.TAG_PERSON_NAME);
+            	DeleteUsers(nameDelete);
+            	break;
+            default:
+            	break;
+            }
+		}
+
 		super.onActivityResult(requestCode, resultCode, intent);
 	}
 
