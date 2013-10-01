@@ -5,6 +5,8 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+    <item android:id="@+id/menuAddUsers" android:title="@string/menu_action_add_users"></item>
+    <item android:id="@+id/menuDeleteUsers" android:title="@string/menu_action_delete_users"></item>
     <item android:id="@+id/menuGoto" android:title="@string/menu_goto"></item>
 
 </menu>

@@ -136,30 +136,33 @@ public class CalendarTableCellCalculator {
                 selectionArgs,
                 null);
 		
-		int iAvalibleStyle = cursor
-				.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
-		
-		if (cursor.moveToFirst()) {
-			for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()){
-				if(cursor.getInt(iAvalibleStyle) > 0){
-					checkedUser++;
+		if (null != cursor) {
+
+			int iAvalibleStyle = cursor
+					.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
+
+			if (cursor.moveToFirst()) {
+				for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor
+						.moveToNext()) {
+					if (cursor.getInt(iAvalibleStyle) > 0) {
+						checkedUser++;
+					}
 				}
 			}
-		}
-		cursor.close();
-		
-        if ((totalUser - checkedUser) <= 1) {
-        	imgCellHint.setImageDrawable(rootView.getResources().getDrawable(
-					R.drawable.img_cell_green));
-		} else if ((checkedUser * 2) >= totalUser) {
+			cursor.close();
 
-			imgCellHint.setImageDrawable(rootView.getResources().getDrawable(
-					R.drawable.img_cell_yellow));
-		} else if ((checkedUser * 2) < totalUser) {
-			imgCellHint.setImageDrawable(rootView.getResources().getDrawable(
-					R.drawable.img_cell_red));
+			if ((totalUser - checkedUser) <= 1) {
+				imgCellHint.setImageDrawable(rootView.getResources()
+						.getDrawable(R.drawable.img_cell_green));
+			} else if ((checkedUser * 2) >= totalUser) {
+
+				imgCellHint.setImageDrawable(rootView.getResources()
+						.getDrawable(R.drawable.img_cell_yellow));
+			} else if ((checkedUser * 2) < totalUser) {
+				imgCellHint.setImageDrawable(rootView.getResources()
+						.getDrawable(R.drawable.img_cell_red));
+			}
 		}
-        
         //store date into tag
         rootView.setTag(date);
         return rootView;

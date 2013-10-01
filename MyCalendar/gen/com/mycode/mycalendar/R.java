@@ -104,9 +104,11 @@ public final class R {
         public static final int imgPreviousMonth=0x7f0a0000;
         public static final int imgToday=0x7f0a0003;
         public static final int listView=0x7f0a0017;
-        public static final int menuGoto=0x7f0a001a;
+        public static final int menuAddUsers=0x7f0a001a;
+        public static final int menuDeleteUsers=0x7f0a001b;
+        public static final int menuGoto=0x7f0a001c;
         public static final int menu_action_ok=0x7f0a0018;
-        public static final int menu_action_submit=0x7f0a001b;
+        public static final int menu_action_submit=0x7f0a001d;
         public static final int nameCheck=0x7f0a0014;
         public static final int pager=0x7f0a0007;
         public static final int tableViewCalendar=0x7f0a0011;
@@ -156,8 +158,10 @@ public final class R {
         public static final int desc_previous_month=0x7f06000d;
         public static final int desc_today=0x7f06000f;
         public static final int hello_world=0x7f060002;
+        public static final int menu_action_add_users=0x7f060025;
         public static final int menu_action_check=0x7f06001e;
         public static final int menu_action_delete=0x7f06001f;
+        public static final int menu_action_delete_users=0x7f060026;
         public static final int menu_goto=0x7f06000c;
         public static final int menu_settings=0x7f06000b;
         public static final int schedular_all_day=0x7f060016;

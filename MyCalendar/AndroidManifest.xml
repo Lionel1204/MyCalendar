@@ -45,6 +45,8 @@
          </activity>
 	     <provider android:name=".SchedularProvider"
                   android:authorities="com.mycode.mycalendar.SchedularProvider"/>
+	     <provider android:name=".UserNameProvider"
+                  android:authorities="com.mycode.mycalendar.UserNameProvider"/>
     </application>
 
 </manifest>

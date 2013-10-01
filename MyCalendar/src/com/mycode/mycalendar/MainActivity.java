@@ -1,10 +1,14 @@
 
 package com.mycode.mycalendar;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -112,13 +116,54 @@ public class MainActivity extends FragmentActivity implements
                 dpd.show();
                 return true;
                 //break;
+            case R.id.menuAddUsers:
+            	AddUsers();
+            	break;
+            case R.id.menuDeleteUsers:
+            	DeleteUsers();
+            	break;
             default:
                     break;
         }
         return false;
     }
     
-    public void onMenuImageClick(View v){
+    private void DeleteUsers() {
+		// TODO Auto-generated method stub
+    	String Name = "Lionel";
+    	Uri uri = SchedularProviderMetaData.UserNameTableMetaData.CONTENT_URI_NAME;
+    	ContentResolver resolver= this.getContentResolver();
+    	ContentValues values = new ContentValues();
+    	values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, Name);
+    	
+    	String whereClause = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME
+    		      + "=? ";
+          String[] whereArgs = {Name};
+    	resolver.delete(uri, whereClause, whereArgs);
+	}
+
+	private void AddUsers() {
+		// TODO Auto-generated method stub
+    	String Name = "Lionel";
+    	Uri uri = SchedularProviderMetaData.UserNameTableMetaData.CONTENT_URI_NAME;
+    	ContentResolver resolver= this.getContentResolver();
+    	ContentValues values = new ContentValues();
+    	values.put(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME, Name);
+    	
+    	String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_USER_NAME
+    		      + "=? ";
+          String[] selectionArgs = {Name};
+    	Cursor cursor = resolver.query(uri, null, selection, selectionArgs, null);
+    	
+    	
+    	if(cursor != null && !cursor.moveToFirst()){
+    		resolver.insert(uri, values);
+    	}
+    	cursor.close();
+    	
+	}
+
+	public void onMenuImageClick(View v){
         switch (v.getId()){
             case R.id.imgPreviousMonth:
                 mPager.setCurrentItem(mPager.getCurrentItem() - 1);

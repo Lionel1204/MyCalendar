@@ -153,5 +153,7 @@
     <string name="choose_morning">Morning</string>
     <string name="choose_afternoon">Afternoon</string>
     <string name="choose_evening">Evening</string>
+    <string name="menu_action_add_users">Add Users</string>
+    <string name="menu_action_delete_users">Delete Users</string>
     
 </resources>

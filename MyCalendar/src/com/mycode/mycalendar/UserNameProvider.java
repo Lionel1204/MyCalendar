@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import com.mycode.mycalendar.SchedularProviderMetaData.SchedularTableMetaData;
+import com.mycode.mycalendar.SchedularProviderMetaData.UserNameTableMetaData;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -30,19 +30,19 @@ public class UserNameProvider extends ContentProvider {
 	    
 		static {
 			sSchedularProjectionMap = new HashMap<String, String>();
-			sSchedularProjectionMap.put(SchedularTableMetaData._ID, 
-					                    SchedularTableMetaData._ID);
+			sSchedularProjectionMap.put(UserNameTableMetaData._ID, 
+					UserNameTableMetaData._ID);
 			
-			sSchedularProjectionMap.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, 
-	                                    SchedularTableMetaData.SCHEDULAR_USER_NAME);
+			sSchedularProjectionMap.put(UserNameTableMetaData.COLUMN_USER_NAME, 
+					UserNameTableMetaData.COLUMN_USER_NAME);
 						
 			sUriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
 	        
 			//add match code
-			sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY, 
+			sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY_NAME, 
 					          "UserNameTable", 
 					          USER_NAME_COLLECTION_URI_INDICATOR);
-			sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY, 
+			sUriMatcher.addURI(SchedularProviderMetaData.AUTHORITY_NAME, 
 					          "UserNameTable/#", 
 					          USER_NAME_SIGLE_URI_INDICATOR);
 		}
@@ -53,12 +53,12 @@ public class UserNameProvider extends ContentProvider {
 		int count = 0;
 		switch (sUriMatcher.match(uri)){
 		case USER_NAME_COLLECTION_URI_INDICATOR:
-			count = db.delete(SchedularTableMetaData.TABLE_NAME_USER_NAME, whereClause, whereArgs);
+			count = db.delete(UserNameTableMetaData.TABLE_NAME_USER_NAME, whereClause, whereArgs);
 			break;
 		case USER_NAME_SIGLE_URI_INDICATOR:
 			String rowId = uri.getPathSegments().get(1);//get id
-			count = db.delete(SchedularTableMetaData.TABLE_NAME_USER_NAME, 
-					          SchedularTableMetaData._ID 
+			count = db.delete(UserNameTableMetaData.TABLE_NAME_USER_NAME, 
+					UserNameTableMetaData._ID 
 					              + "=" 
 					              + rowId 
 					              + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), 
@@ -76,9 +76,9 @@ public class UserNameProvider extends ContentProvider {
 		// TODO Auto-generated method stub
 		switch(sUriMatcher.match(uri)){
 		case USER_NAME_COLLECTION_URI_INDICATOR:
-			return SchedularTableMetaData.CONTENT_TYPE;
+			return UserNameTableMetaData.CONTENT_TYPE;
 		case USER_NAME_SIGLE_URI_INDICATOR:
-			return SchedularTableMetaData.CONTENT_ITEM_TYPE;
+			return UserNameTableMetaData.CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);	
 		}
@@ -109,18 +109,18 @@ public class UserNameProvider extends ContentProvider {
 		
 		//Make sure to set the fields
 		
-		if (!values.containsKey(SchedularTableMetaData.SCHEDULAR_USER_NAME)){
-		    values.put(SchedularTableMetaData.SCHEDULAR_USER_NAME, "DefaultName");
+		if (!values.containsKey(UserNameTableMetaData.COLUMN_USER_NAME)){
+		    values.put(UserNameTableMetaData.COLUMN_USER_NAME, "DefaultName");
 		}
 		
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		
 		//insert data
-		long rowId = db.insert(SchedularTableMetaData.TABLE_NAME_USER_NAME, 
-				               SchedularTableMetaData.SCHEDULAR_USER_NAME, values);
+		long rowId = db.insert(UserNameTableMetaData.TABLE_NAME_USER_NAME, 
+				UserNameTableMetaData.COLUMN_USER_NAME, values);
 		//insert sucessfully and notify change
 		if (rowId > 0){
-			Uri insertedSchedularUri = ContentUris.withAppendedId(SchedularTableMetaData.CONTENT_URI, rowId);
+			Uri insertedSchedularUri = ContentUris.withAppendedId(UserNameTableMetaData.CONTENT_URI_NAME, rowId);
 			getContext().getContentResolver().notifyChange(insertedSchedularUri, null);//notify who regists uri
 			return insertedSchedularUri;
 		}
@@ -142,7 +142,7 @@ public class UserNameProvider extends ContentProvider {
 		
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 		
-		qb.setTables(SchedularTableMetaData.TABLE_NAME_USER_NAME);
+		qb.setTables(UserNameTableMetaData.TABLE_NAME_USER_NAME);
 		qb.setProjectionMap(sSchedularProjectionMap);
 		
 		switch (sUriMatcher.match(uri)){
@@ -150,7 +150,7 @@ public class UserNameProvider extends ContentProvider {
 			break;
 		case USER_NAME_SIGLE_URI_INDICATOR:
 			
-			qb.appendWhere(SchedularTableMetaData._ID
+			qb.appendWhere(UserNameTableMetaData._ID
 					     + "="
 					     + uri.getPathSegments().get(1));
 			break;
@@ -159,7 +159,7 @@ public class UserNameProvider extends ContentProvider {
 		}
 		
 		String orderBy = TextUtils.isEmpty(sortOrder) ? 
-				         SchedularTableMetaData.DEFAULT_SORT_ORDER : sortOrder;
+				UserNameTableMetaData.DEFAULT_SORT_ORDER : sortOrder;
 		SQLiteDatabase db = mDbHelper.getReadableDatabase();
 		Cursor cur = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
 		
@@ -176,13 +176,13 @@ public class UserNameProvider extends ContentProvider {
 		int count = 0;
 		switch (sUriMatcher.match(uri)){
 		case USER_NAME_COLLECTION_URI_INDICATOR:
-			count = db.update(SchedularTableMetaData.TABLE_NAME_USER_NAME, values, whereClause, whereArgs);
+			count = db.update(UserNameTableMetaData.TABLE_NAME_USER_NAME, values, whereClause, whereArgs);
 			break;
 		case USER_NAME_SIGLE_URI_INDICATOR:
 			String rowId = uri.getPathSegments().get(1);//get id
-			count = db.update(SchedularTableMetaData.TABLE_NAME_USER_NAME, 
+			count = db.update(UserNameTableMetaData.TABLE_NAME_USER_NAME, 
 					          values, 
-					          SchedularTableMetaData._ID 
+					          UserNameTableMetaData._ID 
 					              + "=" 
 					              + rowId 
 					              + (!TextUtils.isEmpty(whereClause) ? " AND (" + whereClause + ')' : ""), 

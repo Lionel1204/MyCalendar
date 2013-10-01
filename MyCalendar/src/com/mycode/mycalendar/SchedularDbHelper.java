@@ -1,6 +1,7 @@
 package com.mycode.mycalendar;
 
 import com.mycode.mycalendar.SchedularProviderMetaData.SchedularTableMetaData;
+import com.mycode.mycalendar.SchedularProviderMetaData.UserNameTableMetaData;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,7 +27,7 @@ public class SchedularDbHelper extends SQLiteOpenHelper {
         		 + SchedularTableMetaData._ID
         		 + " INTEGER PRIMARY KEY,"
         		 + SchedularTableMetaData.SCHEDULAR_USER_NAME
-       		     + " TEXT"
+       		     + " TEXT,"
         		 + SchedularTableMetaData.SCHEDULAR_USER_ID
         		 + " INTEGER,"
         		 + SchedularTableMetaData.SCHEDULAR_DATE
@@ -34,23 +35,23 @@ public class SchedularDbHelper extends SQLiteOpenHelper {
         		 + SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE
         		 + " INTEGER"
         		 + ");");
-        /*
+
         db.execSQL("CREATE TABLE IF NOT EXISTS "
-       		 + SchedularTableMetaData.TABLE_NAME_USER_NAME
+       		 + UserNameTableMetaData.TABLE_NAME_USER_NAME
        		 + " ("
        		 + SchedularTableMetaData._ID
        		 + " INTEGER PRIMARY KEY,"
        		 + SchedularTableMetaData.SCHEDULAR_USER_NAME
        		 + " TEXT"
        		 + ");");
-        */
+        
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
 		db.execSQL("DROP TABLE IF EXISTS " + SchedularTableMetaData.TABLE_NAME_SCHEDULAR);
-		db.execSQL("DROP TABLE IF EXISTS " + SchedularTableMetaData.TABLE_NAME_USER_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + UserNameTableMetaData.TABLE_NAME_USER_NAME);
 		onCreate(db);
 	}
 
