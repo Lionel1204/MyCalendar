@@ -39,7 +39,7 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
 	
     private ArrayList<HashMap<String, Object>> mListItems;
     private ListView mListView = null;
-    private String[] mUserNames = new String[]{"Bob", "Jimmy", "Tim"};
+   // private String[] mUserNames = new String[]{"Bob", "Jimmy", "Tim"};
     private ArrayList<HashMap<String, Object>> mUserInformation;
     private String[] mItemControlsName = new String[]{"nameCheck", "txtUserName", "txtUserId"};
     private int[] mListItemControls = new int[]{R.id.nameCheck, R.id.txtUserName, R.id.txtUserId};
@@ -68,14 +68,29 @@ public class UserListActivity extends ListActivity implements OnCheckedChangeLis
        
         this.setListAdapter(adapter);
         
-
-        for(int i=0;i<mUserNames.length;i++) {
-            HashMap<String, Object>map = new HashMap<String, Object>();
-            map.put(mItemControlsName[0], false);
-            map.put(mItemControlsName[1], mUserNames[i]);
-            mListItems.add(map);
-        }
         
+    	Uri uri = SchedularProviderMetaData.UserNameTableMetaData.CONTENT_URI_NAME;
+    	ContentResolver resolver= this.getContentResolver();
+    	
+    	Cursor cursor = resolver.query(uri, null, null, null, null);
+    	String[] userNames = null;
+    	if(null != cursor){
+    		userNames = new String[cursor.getCount()];
+    		int index = 0;
+    		int iName = cursor.getColumnIndex(SchedularProviderMetaData.UserNameTableMetaData.COLUMN_USER_NAME);
+    		for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()){
+    			userNames[index++] = cursor.getString(iName);
+    		}
+    	}
+    	
+		if (userNames != null) {
+			for (int i = 0; i < userNames.length; i++) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put(mItemControlsName[0], false);
+				map.put(mItemControlsName[1], userNames[i]);
+				mListItems.add(map);
+			}
+		}
         Intent intent = this.getIntent();
         mPickDate = intent.getLongExtra(MainActivity.CHOOSED_DAY, System.currentTimeMillis());
         mResolver = this.getContentResolver();
