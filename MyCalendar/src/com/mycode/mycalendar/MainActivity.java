@@ -80,6 +80,7 @@ public class MainActivity extends FragmentActivity implements
     	if(null != cursor){
     		userCount = cursor.getCount();
     	}
+    	cursor.close();
     	
     	SharedPreferences pref = this.getSharedPreferences("preferences",Context.MODE_PRIVATE); 
     	Editor editor = pref.edit();
