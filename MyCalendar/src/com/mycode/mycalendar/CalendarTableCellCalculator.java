@@ -1,6 +1,9 @@
 package com.mycode.mycalendar;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +37,7 @@ public class CalendarTableCellCalculator {
         mDateFormatter = new DateFormatter(resources);
     }
 
-    public View getView(int position, LayoutInflater inflater, ViewGroup container) {
+    public View getView(Context context, int position, LayoutInflater inflater, ViewGroup container) {
         // TODO Auto-generated method stub
         ViewGroup rootView = null;
         LunarCalendar date = new LunarCalendar(mFirstDayMillis + (position - (position / 8) - 1) * LunarCalendar.DAY_MILLIS);
@@ -110,11 +113,52 @@ public class CalendarTableCellCalculator {
             rootView.setBackgroundResource(R.drawable.selector_calendar_weekend);
         }
         
+        ImageView imgCellHint = (ImageView) rootView.findViewById(R.id.imgCellHint);
         if (date.isToday()){
-            ImageView imgCellHint = (ImageView) rootView.findViewById(R.id.imgCellHint);
             imgCellHint.setBackgroundResource(R.drawable.img_hint_today);
             rootView.setBackgroundResource(R.drawable.shape_calendar_cell_today);
         }
+        
+        //is it busy?
+        int totalUser = 3;
+        int checkedUser = 0;
+        
+        Uri uri = SchedularProviderMetaData.SchedularTableMetaData.CONTENT_URI;
+		
+		String selection = SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_DATE
+  		      + "=? ";
+        String[] selectionArgs = {String.valueOf(date.getTimeInMillis())};
+
+        
+		Cursor cursor = context.getContentResolver().query(uri,
+                null,
+                selection,
+                selectionArgs,
+                null);
+		
+		int iAvalibleStyle = cursor
+				.getColumnIndex(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_AVAILABLE_STYLE);
+		
+		if (cursor.moveToFirst()) {
+			for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()){
+				if(cursor.getInt(iAvalibleStyle) > 0){
+					checkedUser++;
+				}
+			}
+		}
+		cursor.close();
+		
+        if ((totalUser - checkedUser) <= 1) {
+        	imgCellHint.setImageDrawable(rootView.getResources().getDrawable(
+					R.drawable.img_cell_green));
+		} else if ((checkedUser * 2) >= totalUser) {
+
+			imgCellHint.setImageDrawable(rootView.getResources().getDrawable(
+					R.drawable.img_cell_yellow));
+		} else if ((checkedUser * 2) < totalUser) {
+			imgCellHint.setImageDrawable(rootView.getResources().getDrawable(
+					R.drawable.img_cell_red));
+		}
         
         //store date into tag
         rootView.setTag(date);

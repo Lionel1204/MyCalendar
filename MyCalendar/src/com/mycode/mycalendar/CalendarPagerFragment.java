@@ -1,5 +1,6 @@
 package com.mycode.mycalendar;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ public class CalendarPagerFragment extends Fragment {
    
     private static final String ARG_PAGE = "page";
     private int mMonthIndex;
+    private Activity mActivityAttached = null;
     
     public static Fragment create(int position) {
         // TODO Auto-generated method stub
@@ -32,6 +34,13 @@ public class CalendarPagerFragment extends Fragment {
     }
 
     @Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+    	mActivityAttached = activity;
+		super.onAttach(activity);
+	}
+
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreateView(inflater, container, savedInstanceState);
@@ -45,7 +54,7 @@ public class CalendarPagerFragment extends Fragment {
         for (int row=0; row<tableMaxRow; row++){
             tableRow = new TableRow(tableView.getContext());
             for (int column=0; column<tableMaxColumn; column++){
-                cellView = cellCalculator.getView(row * tableMaxColumn + column, inflater, tableRow);
+                cellView = cellCalculator.getView(mActivityAttached, row * tableMaxColumn + column, inflater, tableRow);
                 cellView.setOnFocusChangeListener((OnFocusChangeListener) container.getContext());
                 tableRow.addView(cellView);
             }
