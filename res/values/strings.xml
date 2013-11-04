@@ -148,5 +148,6 @@
         <item>每年</item>
     </string-array>
     <string name="menu_action_delete">Delete</string>
+    <string name="notification_title">Calendar Notification</string>
     
 </resources>

@@ -1,12 +1,15 @@
 package com.mycode.mycalendar;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -51,6 +54,7 @@ public class SchedularActivity extends Activity {
     private static final String DAY = "Day";
     private static final String HOUR = "Hour";
     private static final String MINUTE = "Minius";
+    private static final int intentRequestCode = 0x00103;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +182,20 @@ public class SchedularActivity extends Activity {
             mResolver.insert(uri, values);
         }
         
+        setAlarm(values);
+        
+    }
+
+    private void setAlarm(ContentValues values) {
+        // TODO Auto-generated method stub
+        AlarmManager am = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+        
+        Intent alarmIntent = new Intent(this, SchedularReceiver.class);
+        alarmIntent.putExtra("AlarmMessage", values.getAsString(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_SUBJECT));
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, intentRequestCode, alarmIntent, 0);
+        
+        long triggerAtMillis = values.getAsLong(SchedularProviderMetaData.SchedularTableMetaData.SCHEDULAR_FROM_DATE);
+        am.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pIntent);
     }
 
     private long ConvertControlsDate2Millis(TextView dateView, TextView timeView) {

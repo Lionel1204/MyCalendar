@@ -3,7 +3,9 @@ package com.mycode.mycalendar;
 
 import android.os.Bundle;
 import android.app.DatePickerDialog;
+import android.app.NotificationManager;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
@@ -34,6 +36,7 @@ public class MainActivity extends FragmentActivity implements
     private TextView mTxtTitleLunar;
     
     final static int mMonthAYear = 12;
+    private static final int mId = 0x01733;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,12 @@ public class MainActivity extends FragmentActivity implements
     @Override
 	protected void onStart() {
 		// TODO Auto-generated method stub
+        
+        NotificationManager mNotificationManager =
+                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+            // mId allows you to update the notification later on.
+            mNotificationManager.cancel(mId);
+            
 		super.onStart();
 	}
 
