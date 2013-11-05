@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+
 
 public class SchedularReceiver extends BroadcastReceiver {
 
@@ -22,8 +22,8 @@ public class SchedularReceiver extends BroadcastReceiver {
         .setSmallIcon(R.drawable.ic_notify_calendar)
                 .setContentTitle(context.getText(R.string.notification_title))
                 .setContentText(message)
-                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-                //.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))  
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));  
                 //.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
         
         
